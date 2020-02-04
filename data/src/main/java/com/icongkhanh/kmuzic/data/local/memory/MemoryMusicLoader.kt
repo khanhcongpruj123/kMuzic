@@ -1,16 +1,15 @@
 package com.icongkhanh.kmuzic.data.local.memory
 
-import android.app.Activity
+import android.content.Context
 import android.provider.MediaStore
-import android.util.Log
 import com.icongkhanh.kmuzic.domain.models.Muzic
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class MemoryMusicLoader(val activity: Activity) {
+class MemoryMusicLoader(val context: Context) {
 
     suspend fun execute(): Flow<Muzic> = flow {
-        val contentProvider = activity.contentResolver
+        val contentProvider = context.contentResolver
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
         val selection = " ${MediaStore.Audio.Media.IS_MUSIC} != 0"
