@@ -7,7 +7,7 @@ class NowPlaylist {
 
     init {
         listMuzic = mutableListOf()
-        currentPosition = 0
+        currentPosition = -1
     }
 
     fun getPlayingMuzic() : Muzic{
@@ -30,11 +30,19 @@ class NowPlaylist {
         }
     }
 
+    fun isExistedMuzic(muzic: Muzic): Boolean {
+        return listMuzic.contains(muzic)
+    }
+
     /**
      *  return index of music have just added
      * */
     fun addMusic(muzic: Muzic) : Int {
         listMuzic.add(muzic)
+        return listMuzic.indexOf(muzic)
+    }
+
+    fun indexOfMuzic(muzic: Muzic): Int {
         return listMuzic.indexOf(muzic)
     }
 }

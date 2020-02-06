@@ -15,6 +15,7 @@ import com.icongkhanh.kmuzic.utils.BitmapUtils
 class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAdapter.LocalViewHoder>() {
 
     private val listMusic = mutableListOf<Muzic>()
+    private lateinit var onPressItem: (muzic: Muzic) -> Unit
 
     class LocalViewHoder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -56,7 +57,12 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
             .into(holder.thumnail)
 
         holder.itemView.setOnClickListener {
-
+            onPressItem(item)
         }
     }
+
+    fun setOnPressItem(callback: (muzic: Muzic) -> Unit) {
+        onPressItem = callback
+    }
+
 }

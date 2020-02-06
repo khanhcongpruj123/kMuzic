@@ -6,6 +6,7 @@ import com.icongkhanh.kmuzic.data.repositories.MuzicRepositoryImpl
 import com.icongkhanh.kmuzic.domain.repositories.MuzicRepository
 import com.icongkhanh.kmuzic.domain.usecases.LoadAllMusicUseCase
 import com.icongkhanh.kmuzic.fragments.homeviewpager.MusicViewModel
+import com.icongkhanh.kmuzic.playmuzicservice.MuzicPlayer
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
@@ -20,12 +21,17 @@ class App : Application() {
             androidContext(this@App)
 
             modules(
-                module {
-                    factory { LoadAllMusicUseCase(get()) }
-                    factory { MuzicRepositoryImpl(get()) as MuzicRepository }
-                    factory { MemoryMusicLoader(this@App) }
-                    viewModel { MusicViewModel(get()) }
-                }
+                listOf(
+                    module {
+                        factory { LoadAllMusicUseCase(get()) }
+                        factory { MuzicRepositoryImpl(get()) as MuzicRepository }
+                        factory { MemoryMusicLoader(this@App) }
+                        viewModel { MusicViewModel(get()) }
+                    },
+                    module {
+                        single { MuzicPlayer(this@App) }
+                    }
+                )
             )
         }
     }

@@ -1,51 +1,93 @@
 package com.icongkhanh.kmuzic.playmuzicservice
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.IBinder
+import android.util.Log
 
-class MuzicPlayer {
+class MuzicPlayer(val context: Context) {
 
-    val nowPlaylist: NowPlaylist
-    val player: MediaPlayer
+    var isBind = false
+    var muzicService: MuzicService? = null
+    val connection = object : ServiceConnection {
+        override fun onServiceDisconnected(name: ComponentName?) {
+            Log.d("AppLog", "Service connected!")
+            muzicService = null
+            onUnbind()
+        }
 
-    init {
-        nowPlaylist = NowPlaylist()
-        player = MediaPlayer()
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            Log.d("AppLog", "Service connected!")
+            val binder = service as MuzicService.LocalBinder
+            muzicService = binder.getService()
+            onBind()
+        }
+
+    }
+    var muzicState = MuzicState.IDLE
+    lateinit var listener: OnMuzicStateChangedListener
+
+    fun bind() {
+        val intent = Intent(context, MuzicService::class.java)
+        context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
 
-    fun play() {
-        player.apply {
+    fun unbind() {
+        context.unbindService(connection)
+    }
 
-            if (player.isPlaying) {
-                player.stop()
-            }
+    fun onBind() {
+        isBind = true
+    }
 
-            player.setDataSource(nowPlaylist.getPlayingMuzic().path)
-            player.prepare()
-            player.start()
-        }
+    fun onUnbind() {
+        isBind = false
+    }
+
+    fun play(muzic: Muzic) {
+        if (!isValidate()) return
+        muzicService?.addMusicToPlaylistAndPlay(muzic)
+        changeState(MuzicState.PLAY)
+    }
+
+    fun playOrPause() {
+        if (!isValidate()) return
+        muzicService?.playOrPause()
+        val isPlaying = muzicService?.isPlaying()!! || false
+        if (isPlaying) changeState(MuzicState.PLAY)
+        else changeState(MuzicState.PAUSE)
+
     }
 
     fun pause() {
-        player.pause()
-    }
-
-    fun stop() {
-        player.stop()
+        if (!isValidate()) return
+        muzicService?.pause()
     }
 
     fun next() {
-        nowPlaylist.next()
-        play()
+        if (!isValidate()) return
+        muzicService?.next()
     }
 
-    fun addMusicToPlaylist(muzic: Muzic) {
-        nowPlaylist.addMusic(muzic)
+    fun previous() {
+        if (!isValidate()) return
+        muzicService?.previous()
     }
 
-    fun addMusicToPlaylistAndPlay(muzic: Muzic) {
-        val index = nowPlaylist.addMusic(muzic)
-        nowPlaylist.currentPosition = index
-        play()
+    fun isValidate() : Boolean {
+        return isBind || muzicService != null
+    }
+
+    fun changeState(state: MuzicState) {
+        muzicState = state
+        listener?.onChanged(muzicState)
+    }
+
+    fun setOnStateChangedListener(listener: OnMuzicStateChangedListener) {
+        this.listener = listener
     }
 }
