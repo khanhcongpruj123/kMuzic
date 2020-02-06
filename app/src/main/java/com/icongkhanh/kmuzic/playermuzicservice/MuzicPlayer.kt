@@ -44,7 +44,7 @@ class MuzicPlayer(val context: Context) {
 
     fun unbind() {
         context.unbindService(connection)
-        context.stopService(Intent(context, MuzicService::class.java))
+//        context.stopService(Intent(context, MuzicService::class.java))
     }
 
     fun onBind() {

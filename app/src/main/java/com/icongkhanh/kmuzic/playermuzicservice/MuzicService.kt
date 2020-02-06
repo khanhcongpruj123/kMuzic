@@ -36,9 +36,6 @@ class MuzicService : Service() {
 
         createNotificationChannel()
 
-        Log.d("AppLog", "Start Foreground!")
-        startForeground(1, buidNotification())
-
         return START_NOT_STICKY
     }
 
@@ -56,6 +53,9 @@ class MuzicService : Service() {
 
 
     fun play() {
+
+        startForeground(1, buidNotification())
+
         if (player.isPlaying) player.stop()
         player.reset()
         player.let {
@@ -153,6 +153,12 @@ class MuzicService : Service() {
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        player.stop()
     }
 
 }
