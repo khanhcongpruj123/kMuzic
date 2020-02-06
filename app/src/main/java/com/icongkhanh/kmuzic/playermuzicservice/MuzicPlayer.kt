@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 
@@ -34,11 +35,16 @@ class MuzicPlayer(val context: Context) {
     fun bind() {
         if (isBind) return
         val intent = Intent(context, MuzicService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Log.d("AppLog", "Start foreground!")
+            context.startService(intent)
+        }
         context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
 
     fun unbind() {
         context.unbindService(connection)
+        context.stopService(Intent(context, MuzicService::class.java))
     }
 
     fun onBind() {

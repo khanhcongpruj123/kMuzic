@@ -77,6 +77,10 @@ class MusicFragment : Fragment() {
         viewModel.listMuzic.observe(this.viewLifecycleOwner, Observer {
             listMusicAdapter.updateListMuisc(it)
         })
+    }
+
+    override fun onStart() {
+        super.onStart()
 
         viewModel.onStart()
     }

@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.icongkhanh.kmuzic.MainActivity
 import com.icongkhanh.kmuzic.R
 
@@ -20,7 +19,7 @@ class MuzicService : Service() {
         val PLAY = "com.icongkhanh.kmuzic.PLAY"
     }
 
-    private val CHANNEL_ID: String = "com.icongkhanh.kmuzic"
+    private val CHANNEL_ID: String = "kMuzic Service"
     val binder = LocalBinder()
 
     val player = MediaPlayer()
@@ -30,11 +29,15 @@ class MuzicService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        createNotificationChannel()
     }
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
+        createNotificationChannel()
+
+        Log.d("AppLog", "Start Foreground!")
+        startForeground(1, buidNotification())
 
         return START_NOT_STICKY
     }
@@ -59,11 +62,6 @@ class MuzicService : Service() {
             it.setDataSource(nowPlaylist.getPlayingMuzic().path)
             it.prepare()
             it.start()
-        }
-
-        with(NotificationManagerCompat.from(this)) {
-            // notificationId is a unique int for each notification that you must define
-            notify(1, buidNotification())
         }
 
     }
@@ -124,6 +122,8 @@ class MuzicService : Service() {
 
     fun buidNotification(): Notification {
 
+        Log.d("AppLog", "Build Notification")
+
         val pendingIntent: PendingIntent = Intent(this, MainActivity::class.java).let { notificationIntent ->
             PendingIntent.getActivity(this, 0, notificationIntent, 0)
         }
@@ -138,10 +138,11 @@ class MuzicService : Service() {
 
     }
     private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
+
+        Log.d("AppLog", "Create Chanel")
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "com.iconglkhanh.kMuzic"
+            val name = "kMuzic"
             val descriptionText = "description"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
