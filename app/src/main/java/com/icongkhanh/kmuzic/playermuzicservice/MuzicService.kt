@@ -61,7 +61,11 @@ class MuzicService : Service() {
             it.start()
         }
 
-        startForeground(1, buidNotification())
+        with(NotificationManagerCompat.from(this)) {
+            // notificationId is a unique int for each notification that you must define
+            notify(1, buidNotification())
+        }
+
     }
 
     fun isExistedMuzic(muzic: Muzic) : Boolean {
@@ -118,7 +122,7 @@ class MuzicService : Service() {
         return player?.isPlaying
     }
 
-    fun buidNotification(): Notification? {
+    fun buidNotification(): Notification {
 
         val pendingIntent: PendingIntent = Intent(this, MainActivity::class.java).let { notificationIntent ->
             PendingIntent.getActivity(this, 0, notificationIntent, 0)

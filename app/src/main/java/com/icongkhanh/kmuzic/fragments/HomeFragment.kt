@@ -55,6 +55,8 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener {
         //setup event
         muzicPlayer.setOnStateChangedListener(this)
 
+        onChanged(muzicPlayer.muzicState)
+
         btnNext.setOnClickListener {
             muzicPlayer.next()
         }

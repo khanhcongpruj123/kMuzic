@@ -16,5 +16,9 @@ class MainActivity : AppCompatActivity() {
         muzicPlayer.bind()
     }
 
+    override fun onResume() {
+        super.onResume()
+    }
+
 }
 

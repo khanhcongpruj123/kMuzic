@@ -32,6 +32,7 @@ class MuzicPlayer(val context: Context) {
     lateinit var listener: OnMuzicStateChangedListener
 
     fun bind() {
+        if (isBind) return
         val intent = Intent(context, MuzicService::class.java)
         context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
@@ -42,6 +43,7 @@ class MuzicPlayer(val context: Context) {
 
     fun onBind() {
         isBind = true
+        if (muzicService!!.isPlaying()) changeState(MuzicState.PLAY)
     }
 
     fun onUnbind() {
