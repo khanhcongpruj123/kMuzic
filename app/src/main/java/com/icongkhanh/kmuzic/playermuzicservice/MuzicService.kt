@@ -11,6 +11,8 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.icongkhanh.kmuzic.MainActivity
+import com.icongkhanh.kmuzic.R
 
 class MuzicService : Service() {
 
@@ -29,8 +31,6 @@ class MuzicService : Service() {
         super.onCreate()
 
         createNotificationChannel()
-
-        startForeground(1, buidNotification())
     }
 
 
@@ -60,6 +60,8 @@ class MuzicService : Service() {
             it.prepare()
             it.start()
         }
+
+        startForeground(1, buidNotification())
     }
 
     fun isExistedMuzic(muzic: Muzic) : Boolean {
@@ -118,9 +120,14 @@ class MuzicService : Service() {
 
     fun buidNotification(): Notification? {
 
+        val pendingIntent: PendingIntent = Intent(this, MainActivity::class.java).let { notificationIntent ->
+            PendingIntent.getActivity(this, 0, notificationIntent, 0)
+        }
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_music_note)
+            .setSmallIcon(R.drawable.ic_play_arrow)
             .setContentTitle("kMuzic")
+            .setContentIntent(pendingIntent)
             .setContentText("Playing...")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
