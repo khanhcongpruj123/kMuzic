@@ -1,6 +1,7 @@
 package com.icongkhanh.kmuzic.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -53,7 +54,7 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener {
         viewPager.adapter = viewpagerAdapter
 
         //setup event
-        muzicPlayer.setOnStateChangedListener(this)
+        muzicPlayer.addOnStateChangedListener(this)
 
         onChanged(muzicPlayer.muzicState)
 
@@ -72,6 +73,7 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener {
     }
 
     override fun onChanged(state: MuzicState) {
+        Log.d("Home Fragement", "Muzic State: ${state}")
         when(state) {
             MuzicState.PLAY -> btnPlayPause.setImageResource(R.drawable.ic_pause)
             MuzicState.PAUSE -> btnPlayPause.setImageResource(R.drawable.ic_play_arrow)

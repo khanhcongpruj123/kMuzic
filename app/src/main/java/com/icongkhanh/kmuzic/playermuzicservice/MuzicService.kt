@@ -1,6 +1,5 @@
 package com.icongkhanh.kmuzic.playermuzicservice
 
-import android.annotation.TargetApi
 import android.app.*
 import android.content.Context
 import android.content.Intent
@@ -18,18 +17,37 @@ class MuzicService : Service() {
 
     companion object {
         val PLAY = "com.icongkhanh.kmuzic.PLAY"
+        val PLAY_OR_PAUSE = "com.icongkhanh.kmuzic.PLAY_OR_PAUSE"
+        val STOP = "com.icongkhanh.kmuzic.STOP"
+        val NEXT = "com.icongkhanh.kmuzic.NEXT"
+        val PREVIOUS = "com.icongkhanh.kmuzic.PREVIOUS"
     }
 
+    private lateinit var notificationLayout: RemoteViews
     private val CHANNEL_ID: String = "kMuzic Service"
     val binder = LocalBinder()
 
     val player = MediaPlayer()
     val nowPlaylist = NowPlaylist()
+    var playingIndex = -1
+
+    var listener = mutableListOf<OnMuzicStateChangedListener>()
+
+    init {
+        player.setOnCompletionListener {
+            next()
+        }
+
+        this.addOnStateMuzicChanged {
+            Log.d("Muzic Service", "Muzic State: ${it}")
+            if (it == MuzicState.PLAY) notificationLayout.setImageViewResource(R.id.btn_play_or_pause, R.drawable.ic_pause)
+            else notificationLayout.setImageViewResource(R.id.btn_play_or_pause, R.drawable.ic_play_arrow)
+        }
+    }
 
 
     override fun onCreate() {
         super.onCreate()
-
     }
 
 
@@ -37,7 +55,22 @@ class MuzicService : Service() {
 
         createNotificationChannel()
 
-        Log.d("Muzic Service", "On start command")
+        intent?.let {
+            when(it.action) {
+                PLAY_OR_PAUSE -> {
+                    playOrPause()
+                }
+                STOP -> {
+                    stop()
+                }
+                NEXT -> {
+                    next()
+                }
+                PREVIOUS -> {
+                    previous()
+                }
+            }
+        }
 
         return START_NOT_STICKY
     }
@@ -57,9 +90,7 @@ class MuzicService : Service() {
 
     fun play() {
 
-        Log.d("Muzic Service", "Play music")
-
-        startForeground(1, buidNotification())
+        startForeground(1, buildNotification())
 
         if (player.isPlaying) player.stop()
         player.reset()
@@ -67,6 +98,8 @@ class MuzicService : Service() {
             it.setDataSource(nowPlaylist.getPlayingMuzic().path)
             it.prepare()
             it.start()
+
+            handleListener(MuzicState.PLAY)
         }
 
     }
@@ -76,11 +109,18 @@ class MuzicService : Service() {
     }
 
     fun pause() {
-        if (player.isPlaying) player.pause()
+        if (player.isPlaying) {
+            player.pause()
+
+            handleListener(MuzicState.PAUSE)
+        }
     }
 
     fun stop() {
         player.stop()
+        stopForeground(true)
+
+        handleListener(MuzicState.IDLE)
     }
 
     fun next() {
@@ -103,7 +143,10 @@ class MuzicService : Service() {
 
         if (isExistedMuzic(muzic)) {
             index = nowPlaylist.indexOfMuzic(muzic)
-            nowPlaylist.currentPosition = index
+            if (nowPlaylist.currentPosition != index) {
+                nowPlaylist.currentPosition = index
+                play()
+            }
         } else {
             index = nowPlaylist.addMusic(muzic)
             nowPlaylist.currentPosition = index
@@ -112,11 +155,17 @@ class MuzicService : Service() {
     }
 
     fun playOrPause() {
-        if (player.isPlaying) player.pause()
+        if (player.isPlaying) {
+            player.pause()
+            handleListener(MuzicState.PAUSE)
+        }
         else {
-            if (nowPlaylist.currentPosition == -1) return
+            if (nowPlaylist.currentPosition == -1) {
+                handleListener(MuzicState.IDLE)
+            }
             else {
                 player.start()
+                handleListener(MuzicState.PLAY)
             }
         }
     }
@@ -125,7 +174,7 @@ class MuzicService : Service() {
         return player?.isPlaying
     }
 
-    fun buidNotification(): Notification {
+    fun buildNotification(): Notification {
 
         Log.d("AppLog", "Build Notification")
 
@@ -133,38 +182,44 @@ class MuzicService : Service() {
             PendingIntent.getActivity(this, 0, notificationIntent, 0)
         }
 
-        val notificationLayout = RemoteViews(packageName, R.layout.mini_controller_notifi)
-        val notificationLayoutExpanded = RemoteViews(packageName, R.layout.mini_controller_notifi)
+        notificationLayout = RemoteViews(packageName, R.layout.mini_controller_notifi)
 
+        val playIntent = Intent(this, MuzicService::class.java).let {
+            it.action = PLAY_OR_PAUSE
+            PendingIntent.getService(this, 1, it, 0)
+        }
 
+        val stopIntent = Intent(this, MuzicService::class.java).let {
+            it.action = STOP
+            PendingIntent.getService(this, 1, it, 0)
+        }
+
+        val nextIntent = Intent(this, MuzicService::class.java).let {
+            it.action = NEXT
+            PendingIntent.getService(this, 1, it, 0)
+        }
+
+        val previousIntent = Intent(this, MuzicService::class.java).let {
+            it.action = PREVIOUS
+            PendingIntent.getService(this, 1, it, 0)
+        }
+
+        notificationLayout.setTextViewText(R.id.tv_name, nowPlaylist.getPlayingMuzic().name)
+
+        notificationLayout.setOnClickPendingIntent(R.id.btn_play_or_pause, playIntent)
+        notificationLayout.setOnClickPendingIntent(R.id.btn_stop, stopIntent)
+        notificationLayout.setOnClickPendingIntent(R.id.btn_next, nextIntent)
+        notificationLayout.setOnClickPendingIntent(R.id.btn_previous, previousIntent)
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_play_arrow)
-//            .setContentTitle("kMuzic")
             .setContentIntent(pendingIntent)
-//            .setContentText("Playing...")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//            .setContent(notificationLayout)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setCustomContentView(notificationLayout)
-//            .setCustomBigContentView(notificationLayoutExpanded)
             .build()
-
-
-//        val notificationLayout = RemoteViews(packageName, R.layout.mini_controller_notifi)
-////        val notificationLayoutExpanded = RemoteViews(packageName, R.layout.notification_large)
-//
-//        val pendingIntent = Intent(this, MainActivity::class.java).let {
-//            PendingIntent.getActivity(this, 0, it, 0)
-//        }
-//
-//        return NotificationCompat.Builder(this, CHANNEL_ID)
-//            .setSmallIcon(R.drawable.ic_play_arrow)
-//            .setContentIntent(pendingIntent)
-//            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-//            .setCustomContentView(notificationLayout)
-//            .build()
     }
+
     private fun createNotificationChannel() {
 
         Log.d("Muzic Service", "Create Chanel")
@@ -172,7 +227,7 @@ class MuzicService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "kMuzic"
             val descriptionText = "description"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_LOW
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText
             }
@@ -183,10 +238,23 @@ class MuzicService : Service() {
         }
     }
 
+    fun addOnStateMuzicChanged(listener: (state: MuzicState) -> Unit) {
+        this.listener.add(object : OnMuzicStateChangedListener {
+            override fun onChanged(state: MuzicState) {
+                listener(state)
+            }
+        })
+    }
+
+    fun handleListener(state: MuzicState) {
+        for (it in listener) {
+            it.onChanged(state)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-
-        player.stop()
+        stop()
     }
 
 }
