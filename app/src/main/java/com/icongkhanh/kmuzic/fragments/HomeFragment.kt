@@ -11,9 +11,9 @@ import com.google.android.material.tabs.TabLayout
 
 import com.icongkhanh.kmuzic.R
 import com.icongkhanh.kmuzic.adapters.HomeViewPagerAdapter
-import com.icongkhanh.kmuzic.playmuzicservice.MuzicPlayer
-import com.icongkhanh.kmuzic.playmuzicservice.MuzicState
-import com.icongkhanh.kmuzic.playmuzicservice.OnMuzicStateChangedListener
+import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
+import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
+import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicStateChangedListener
 import org.koin.android.ext.android.inject
 
 

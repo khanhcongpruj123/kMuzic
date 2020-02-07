@@ -1,4 +1,4 @@
-package com.icongkhanh.kmuzic.playmuzicservice
+package com.icongkhanh.kmuzic.playermuzicservice
 
 import android.annotation.TargetApi
 import android.app.*
@@ -9,6 +9,7 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.icongkhanh.kmuzic.MainActivity
 import com.icongkhanh.kmuzic.R
@@ -36,6 +37,8 @@ class MuzicService : Service() {
 
         createNotificationChannel()
 
+        Log.d("Muzic Service", "On start command")
+
         return START_NOT_STICKY
     }
 
@@ -53,6 +56,8 @@ class MuzicService : Service() {
 
 
     fun play() {
+
+        Log.d("Muzic Service", "Play music")
 
         startForeground(1, buidNotification())
 
@@ -128,18 +133,41 @@ class MuzicService : Service() {
             PendingIntent.getActivity(this, 0, notificationIntent, 0)
         }
 
+        val notificationLayout = RemoteViews(packageName, R.layout.mini_controller_notifi)
+        val notificationLayoutExpanded = RemoteViews(packageName, R.layout.mini_controller_notifi)
+
+
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_play_arrow)
-            .setContentTitle("kMuzic")
+//            .setContentTitle("kMuzic")
             .setContentIntent(pendingIntent)
-            .setContentText("Playing...")
+//            .setContentText("Playing...")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//            .setContent(notificationLayout)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setCustomContentView(notificationLayout)
+//            .setCustomBigContentView(notificationLayoutExpanded)
             .build()
 
+
+//        val notificationLayout = RemoteViews(packageName, R.layout.mini_controller_notifi)
+////        val notificationLayoutExpanded = RemoteViews(packageName, R.layout.notification_large)
+//
+//        val pendingIntent = Intent(this, MainActivity::class.java).let {
+//            PendingIntent.getActivity(this, 0, it, 0)
+//        }
+//
+//        return NotificationCompat.Builder(this, CHANNEL_ID)
+//            .setSmallIcon(R.drawable.ic_play_arrow)
+//            .setContentIntent(pendingIntent)
+//            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+//            .setCustomContentView(notificationLayout)
+//            .build()
     }
     private fun createNotificationChannel() {
 
-        Log.d("AppLog", "Create Chanel")
+        Log.d("Muzic Service", "Create Chanel")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "kMuzic"

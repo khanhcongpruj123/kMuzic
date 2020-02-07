@@ -12,8 +12,8 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.icongkhanh.kmuzic.R
 import com.icongkhanh.kmuzic.adapters.ListMusicAdapter
-import com.icongkhanh.kmuzic.playmuzicservice.Muzic
-import com.icongkhanh.kmuzic.playmuzicservice.MuzicPlayer
+import com.icongkhanh.kmuzic.playermuzicservice.Muzic
+import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 

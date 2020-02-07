@@ -1,4 +1,4 @@
-package com.icongkhanh.kmuzic.playmuzicservice
+package com.icongkhanh.kmuzic.playermuzicservice
 
 import android.content.ComponentName
 import android.content.Context
@@ -35,11 +35,9 @@ class MuzicPlayer(val context: Context) {
     fun bind() {
         if (isBind) return
         val intent = Intent(context, MuzicService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.d("AppLog", "Start foreground!")
-            context.startService(intent)
-        }
-        context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        context.startService(intent)
+        val isOk = context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        Log.d("Muzic Player", "Start service: ${isOk}")
     }
 
     fun unbind() {
@@ -57,6 +55,7 @@ class MuzicPlayer(val context: Context) {
     }
 
     fun play(muzic: Muzic) {
+        Log.d("Muzic Player", "Play music")
         if (!isValidate()) return
         muzicService?.addMusicToPlaylistAndPlay(muzic)
         changeState(MuzicState.PLAY)

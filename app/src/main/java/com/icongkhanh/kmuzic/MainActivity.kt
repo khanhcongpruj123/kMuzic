@@ -1,9 +1,11 @@
 package com.icongkhanh.kmuzic
 
 import android.Manifest
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.icongkhanh.kmuzic.playmuzicservice.MuzicPlayer
+import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
+import com.icongkhanh.kmuzic.playermuzicservice.MuzicService
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
@@ -26,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        muzicPlayer.unbind()
+//        muzicPlayer.unbind()
     }
 
 }

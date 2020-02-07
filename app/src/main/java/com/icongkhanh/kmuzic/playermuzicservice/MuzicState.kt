@@ -1,4 +1,4 @@
-package com.icongkhanh.kmuzic.playmuzicservice
+package com.icongkhanh.kmuzic.playermuzicservice
 
 interface OnMuzicStateChangedListener {
     fun onChanged(state: MuzicState)
