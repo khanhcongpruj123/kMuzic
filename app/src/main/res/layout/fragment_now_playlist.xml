@@ -36,6 +36,7 @@
         android:layout_height="wrap_content" />
 
     <androidx.appcompat.widget.AppCompatSeekBar
+        android:max="100"
         app:layout_constraintBottom_toTopOf="@id/controller"
         android:id="@+id/music_progress"
         app:layout_constraintLeft_toLeftOf="parent"

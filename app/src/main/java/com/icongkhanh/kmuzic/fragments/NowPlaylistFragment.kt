@@ -2,11 +2,14 @@ package com.icongkhanh.kmuzic.fragments
 
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsSeekBar
 import android.widget.ImageButton
+import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 
@@ -22,6 +25,10 @@ import org.koin.android.ext.android.inject
  */
 class NowPlaylistFragment : Fragment() {
 
+    companion object {
+        val TAG = this.javaClass.simpleName
+    }
+
     private val viewmodel: NowPlaylistViewModel by inject()
 
     lateinit var listMuzic: RecyclerView
@@ -29,6 +36,7 @@ class NowPlaylistFragment : Fragment() {
     lateinit var btnPlayOrPause: ImageButton
     lateinit var btnNext: ImageButton
     lateinit var btnPrevious: ImageButton
+    lateinit var seekBar: AppCompatSeekBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +55,10 @@ class NowPlaylistFragment : Fragment() {
                 }
             }
         })
+        viewmodel.progressMusic.observe(this, Observer {
+            Log.d(TAG, "Progess: ${it}")
+            seekBar.progress = (it * 100).toInt()
+        })
     }
 
     override fun onCreateView(
@@ -61,6 +73,7 @@ class NowPlaylistFragment : Fragment() {
         btnNext = view.findViewById(R.id.btn_next)
         btnPlayOrPause = view.findViewById(R.id.btn_play_or_pause)
         btnPrevious = view.findViewById(R.id.btn_previous)
+        seekBar = view.findViewById(R.id.music_progress)
 
         btnPlayOrPause.setOnClickListener {
             viewmodel.onPressPlayOrPause()

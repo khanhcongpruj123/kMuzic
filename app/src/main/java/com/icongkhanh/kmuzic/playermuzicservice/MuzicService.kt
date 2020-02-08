@@ -293,4 +293,9 @@ class MuzicService : Service() {
         stop()
     }
 
+    fun getProgress(): Float {
+        return player.currentPosition.toFloat() / player.duration
+    }
+
+
 }

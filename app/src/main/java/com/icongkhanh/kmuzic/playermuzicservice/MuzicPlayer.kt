@@ -111,4 +111,6 @@ class MuzicPlayer(val context: Context) {
     fun addOnMuzicPlayingChangedListener(listener: OnMuzicPlayingChangedListener) {
         this.muzicPlayingListener.add(listener)
     }
+
+    fun getProgress() = muzicService?.getProgress()
 }
