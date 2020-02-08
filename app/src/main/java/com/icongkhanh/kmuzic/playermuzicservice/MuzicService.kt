@@ -102,8 +102,8 @@ class MuzicService : Service() {
         if (player.isPlaying) player.stop()
         player.reset()
         player.let {
-            Log.d(TAG, "Playing Muzic: ${nowPlaylist.getCurrentMuzic().name}")
-            it.setDataSource(nowPlaylist.getCurrentMuzic().path)
+            Log.d(TAG, "Playing Muzic: ${nowPlaylist.getCurrentMuzic()?.name}")
+            it.setDataSource(nowPlaylist.getCurrentMuzic()?.path)
             it.prepare()
             it.start()
 
@@ -216,7 +216,7 @@ class MuzicService : Service() {
             PendingIntent.getService(this, 1, it, 0)
         }
 
-        notificationLayout.setTextViewText(R.id.tv_name, nowPlaylist.getCurrentMuzic().name)
+        notificationLayout.setTextViewText(R.id.tv_name, nowPlaylist.getCurrentMuzic()?.name)
         notificationLayout.setOnClickPendingIntent(R.id.btn_play_or_pause, playIntent)
         notificationLayout.setOnClickPendingIntent(R.id.btn_stop, stopIntent)
         notificationLayout.setOnClickPendingIntent(R.id.btn_next, nextIntent)

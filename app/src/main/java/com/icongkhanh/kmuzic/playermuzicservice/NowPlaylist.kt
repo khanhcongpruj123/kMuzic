@@ -13,7 +13,8 @@ class NowPlaylist {
         currentPosition = -1
     }
 
-    fun getCurrentMuzic() : Muzic {
+    fun getCurrentMuzic() : Muzic? {
+        if (currentPosition == -1) return null
         return listMuzic[currentPosition]
     }
 

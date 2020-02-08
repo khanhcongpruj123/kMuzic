@@ -11,12 +11,12 @@
         android:padding="5dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/music_progress"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@id/music_name"
         android:layout_width="match_parent"
         android:layout_height="0dp"/>
 
     <TextView
-        android:text="Crush 2"
         android:id="@+id/music_name"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -28,7 +28,6 @@
 
     <TextView
         android:id="@+id/author_name"
-        android:text="Tien Tien"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toTopOf="@id/music_progress"

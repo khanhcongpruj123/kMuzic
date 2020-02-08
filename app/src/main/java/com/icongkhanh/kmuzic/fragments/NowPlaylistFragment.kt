@@ -9,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsSeekBar
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSeekBar
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 
@@ -19,6 +21,7 @@ import com.icongkhanh.kmuzic.playermuzicservice.Muzic
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
 import com.icongkhanh.kmuzic.viewmodels.NowPlaylistViewModel
 import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -26,10 +29,10 @@ import org.koin.android.ext.android.inject
 class NowPlaylistFragment : Fragment() {
 
     companion object {
-        val TAG = this.javaClass.simpleName
+        val TAG = this::class.java.simpleName
     }
 
-    private val viewmodel: NowPlaylistViewModel by inject()
+    private val viewmodel: NowPlaylistViewModel by viewModel()
 
     lateinit var listMuzic: RecyclerView
     lateinit var adapterMuzic: ListMusicAdapter
@@ -37,6 +40,8 @@ class NowPlaylistFragment : Fragment() {
     lateinit var btnNext: ImageButton
     lateinit var btnPrevious: ImageButton
     lateinit var seekBar: AppCompatSeekBar
+    lateinit var tvMusicName: TextView
+    lateinit var tvAuthorName: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +63,15 @@ class NowPlaylistFragment : Fragment() {
         viewmodel.progressMusic.observe(this, Observer {
             Log.d(TAG, "Progess: ${it}")
             seekBar.progress = (it * 100).toInt()
+        })
+
+        viewmodel.currentPlayingPos.observe(this, Observer {
+            val currMusic = viewmodel.listMusic.value?.get(it)
+            Log.d(TAG, "On Oserver Current Muzic: ${currMusic?.name}")
+            currMusic?.let {muzic ->
+                tvAuthorName.text = muzic.authorName
+                tvMusicName.text = muzic.name
+            }
         })
     }
 
@@ -88,6 +102,9 @@ class NowPlaylistFragment : Fragment() {
         }
 
         adapterMuzic = ListMusicAdapter(context!!)
+        adapterMuzic.setOnPressItem {
+            viewmodel.onPressItemMuzic(it)
+        }
         listMuzic.adapter = adapterMuzic
 
         return view

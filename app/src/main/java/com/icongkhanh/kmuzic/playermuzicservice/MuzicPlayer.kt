@@ -113,4 +113,6 @@ class MuzicPlayer(val context: Context) {
     }
 
     fun getProgress() = muzicService?.getProgress()
+
+    fun getCurrentMuzic() = muzicService?.nowPlaylist?.getCurrentMuzic()
 }
