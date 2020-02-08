@@ -25,13 +25,7 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(), OnMuzicP
     fun onStart() {
         stateMuzic.postValue(muzicPlayer.muzicState)
         listMusic.postValue(muzicPlayer.getListMusic()?.map {
-            Muzic(
-                it.id,
-                it.name,
-                it.author,
-                it.isFavorite,
-                it.path
-            )
+           it.toDomainModel()
         })
     }
 
