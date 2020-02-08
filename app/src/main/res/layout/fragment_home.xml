@@ -25,6 +25,7 @@
         android:elevation="4dp"
         android:clipToPadding="false"
         android:background="#2196F3"
+        android:id="@+id/controller"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="match_parent"
         android:layout_height="@dimen/mini_player_height">

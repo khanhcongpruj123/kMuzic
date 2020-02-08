@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 
@@ -26,6 +27,7 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener {
     lateinit var btnNext: ImageButton
     lateinit var btnPrevious: ImageButton
     lateinit var btnPlayPause: ImageButton
+    lateinit var controllerView: View
 
     val muzicPlayer: MuzicPlayer by inject()
 
@@ -47,6 +49,7 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener {
         btnNext = view.findViewById(R.id.btn_next)
         btnPrevious = view.findViewById(R.id.btn_previous)
         btnPlayPause = view.findViewById(R.id.btn_play_or_pause)
+        controllerView = view.findViewById(R.id.controller)
 
         //setup view
         tabLayout.setupWithViewPager(viewPager)
@@ -54,6 +57,11 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener {
         viewPager.adapter = viewpagerAdapter
 
         //setup event
+
+        controllerView.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_nowPlaylistFragment)
+        }
+
         muzicPlayer.addOnStateChangedListener(this)
 
         onChanged(muzicPlayer.muzicState)

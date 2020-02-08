@@ -11,7 +11,7 @@ class MuzicPlayer(val context: Context) {
 
     var isBind = false
     var muzicService: MuzicService? = null
-    val connection = object : ServiceConnection {
+    private val connection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
             Log.d("AppLog", "Service connected!")
             muzicService = null
@@ -27,7 +27,8 @@ class MuzicPlayer(val context: Context) {
 
     }
     var muzicState = MuzicState.IDLE
-    val listener =  arrayListOf<OnMuzicStateChangedListener>()
+    private val stateMuzicListener =  arrayListOf<OnMuzicStateChangedListener>()
+    private val muzicPlayingListener = arrayListOf<OnMuzicPlayingChangedListener>()
 
     fun bind() {
         val intent = Intent(context, MuzicService::class.java)
@@ -41,11 +42,18 @@ class MuzicPlayer(val context: Context) {
 
     fun onBind() {
         isBind = true
-        muzicService?.addOnStateMuzicChanged {state ->
-            muzicState = state
+        muzicService?.let {
+            it.addOnStateMuzicChanged {state ->
+                muzicState = state
 
-            for (it in listener) {
-                it.onChanged(state)
+                for (it in stateMuzicListener) {
+                    it.onChanged(state)
+                }
+            }
+            it.addOnMuzicPlayingChanged { muzic ->
+                for (it in muzicPlayingListener) {
+                    it.onChanged(muzic)
+                }
             }
         }
     }
@@ -93,8 +101,14 @@ class MuzicPlayer(val context: Context) {
         return isBind || muzicService != null
     }
 
+    fun getListMusic() = muzicService?.nowPlaylist?.listMuzic
+
 
     fun addOnStateChangedListener(listener: OnMuzicStateChangedListener) {
-        this.listener.add(listener)
+        this.stateMuzicListener.add(listener)
+    }
+
+    fun addOnMuzicPlayingChangedListener(listener: OnMuzicPlayingChangedListener) {
+        this.muzicPlayingListener.add(listener)
     }
 }

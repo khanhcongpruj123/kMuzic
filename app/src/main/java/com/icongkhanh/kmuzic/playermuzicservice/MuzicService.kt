@@ -34,7 +34,8 @@ class MuzicService : Service() {
     val nowPlaylist = NowPlaylist()
     var muzicState = MuzicState.IDLE
 
-    var listener = mutableListOf<OnMuzicStateChangedListener>()
+    private var stateMuzicListener = mutableListOf<OnMuzicStateChangedListener>()
+    private var muzicPlayingChangedListener = mutableListOf<OnMuzicPlayingChangedListener>()
 
     init {
         player.setOnCompletionListener {
@@ -260,10 +261,19 @@ class MuzicService : Service() {
     }
 
     fun addOnStateMuzicChanged(listener: (state: MuzicState) -> Unit) {
-        this.listener.add(object : OnMuzicStateChangedListener {
+        this.stateMuzicListener.add(object : OnMuzicStateChangedListener {
             override fun onChanged(state: MuzicState) {
                 listener(state)
             }
+        })
+    }
+
+    fun addOnMuzicPlayingChanged(listener: (muzic: Muzic) -> Unit) {
+        this.muzicPlayingChangedListener.add(object : OnMuzicPlayingChangedListener {
+            override fun onChanged(muzic: Muzic) {
+                listener(muzic)
+            }
+
         })
     }
 
@@ -272,7 +282,7 @@ class MuzicService : Service() {
      * */
     fun handleListener(state: MuzicState) {
         muzicState = state
-        for (it in listener) {
+        for (it in stateMuzicListener) {
             it.onChanged(state)
         }
     }

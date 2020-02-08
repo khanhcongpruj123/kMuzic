@@ -9,5 +9,14 @@
         android:id="@+id/homeFragment"
         android:name="com.icongkhanh.kmuzic.fragments.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_nowPlaylistFragment"
+            app:destination="@id/nowPlaylistFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/nowPlaylistFragment"
+        android:name="com.icongkhanh.kmuzic.fragments.NowPlaylistFragment"
+        android:label="fragment_now_playlist"
+        tools:layout="@layout/fragment_now_playlist" />
 </navigation>

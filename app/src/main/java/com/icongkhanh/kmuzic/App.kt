@@ -7,6 +7,7 @@ import com.icongkhanh.kmuzic.domain.repositories.MuzicRepository
 import com.icongkhanh.kmuzic.domain.usecases.LoadAllMusicUseCase
 import com.icongkhanh.kmuzic.fragments.homeviewpager.MusicViewModel
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
+import com.icongkhanh.kmuzic.viewmodels.NowPlaylistViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
@@ -30,6 +31,9 @@ class App : Application() {
                     },
                     module {
                         single { MuzicPlayer(this@App) }
+                    },
+                    module {
+                        viewModel { NowPlaylistViewModel(get()) }
                     }
                 )
             )

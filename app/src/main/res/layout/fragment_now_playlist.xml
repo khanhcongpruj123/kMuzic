@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.NowPlaylistFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_music"
+        android:padding="5dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/music_progress"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
+    <TextView
+        android:text="Crush 2"
+        android:id="@+id/music_name"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/author_name"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/author_name"
+        android:text="Tien Tien"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/music_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        app:layout_constraintBottom_toTopOf="@id/controller"
+        android:id="@+id/music_progress"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="@dimen/width_music_progress_bar"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/controller"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/btn_previous"
+            android:layout_margin="10dp"
+            android:background="?android:selectableItemBackground"
+            android:src="@drawable/ic_skip_previous_48dp"
+            android:layout_width="@dimen/size_large_button_controller"
+            android:layout_height="@dimen/size_large_button_controller" />
+
+        <ImageButton
+            android:id="@+id/btn_play_or_pause"
+            android:layout_margin="10dp"
+            android:background="?android:selectableItemBackground"
+            android:src="@drawable/ic_play_circle_filled_black_48dp"
+            android:layout_width="@dimen/size_large_button_controller"
+            android:layout_height="@dimen/size_large_button_controller" />
+
+        <ImageButton
+            android:id="@+id/btn_next"
+            android:layout_margin="10dp"
+            android:background="?android:selectableItemBackground"
+            android:src="@drawable/ic_skip_next_black_48dp"
+            android:layout_width="@dimen/size_large_button_controller"
+            android:layout_height="@dimen/size_large_button_controller" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
