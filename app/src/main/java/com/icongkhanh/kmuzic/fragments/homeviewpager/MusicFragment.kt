@@ -80,8 +80,9 @@ class MusicFragment : Fragment() {
     }
 
     override fun onStart() {
-        super.onStart()
 
+        Log.d("Music Fragment", "onStart")
+        super.onStart()
         viewModel.onStart()
     }
 

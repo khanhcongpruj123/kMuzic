@@ -32,8 +32,7 @@ class MuzicPlayer(val context: Context) {
     fun bind() {
         val intent = Intent(context, MuzicService::class.java)
         context.startService(intent)
-        val isOk = context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
-        Log.d("Muzic Player", "Start service: ${isOk}")
+        context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
 
     fun unbind() {
@@ -56,7 +55,7 @@ class MuzicPlayer(val context: Context) {
     }
 
     fun play(muzic: Muzic) {
-        Log.d("Muzic Player", "Play music")
+
         if (!isValidate()) {
             bind()
         }

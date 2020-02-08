@@ -16,6 +16,9 @@ import com.icongkhanh.kmuzic.R
 class MuzicService : Service() {
 
     companion object {
+
+        val TAG = this::class.java.simpleName
+
         val PLAY = "com.icongkhanh.kmuzic.PLAY"
         val PLAY_OR_PAUSE = "com.icongkhanh.kmuzic.PLAY_OR_PAUSE"
         val STOP = "com.icongkhanh.kmuzic.STOP"
@@ -29,7 +32,7 @@ class MuzicService : Service() {
 
     val player = MediaPlayer()
     val nowPlaylist = NowPlaylist()
-    var playingIndex = -1
+    var muzicState = MuzicState.IDLE
 
     var listener = mutableListOf<OnMuzicStateChangedListener>()
 
@@ -40,9 +43,12 @@ class MuzicService : Service() {
 
         this.addOnStateMuzicChanged {
             Log.d("Muzic Service", "Muzic State: ${it}")
-            if (it == MuzicState.PLAY) notificationLayout.setImageViewResource(R.id.btn_play_or_pause, R.drawable.ic_pause)
-            else notificationLayout.setImageViewResource(R.id.btn_play_or_pause, R.drawable.ic_play_arrow)
+
+            if (it != MuzicState.IDLE) {
+                startForeground(1, buildNotification(it))
+            }
         }
+
     }
 
 
@@ -90,12 +96,13 @@ class MuzicService : Service() {
 
     fun play() {
 
-        startForeground(1, buildNotification())
+        startForeground(1, buildNotification(MuzicState.PLAY))
 
         if (player.isPlaying) player.stop()
         player.reset()
         player.let {
-            it.setDataSource(nowPlaylist.getPlayingMuzic().path)
+            Log.d(TAG, "Playing Muzic: ${nowPlaylist.getCurrentMuzic().name}")
+            it.setDataSource(nowPlaylist.getCurrentMuzic().path)
             it.prepare()
             it.start()
 
@@ -111,15 +118,15 @@ class MuzicService : Service() {
     fun pause() {
         if (player.isPlaying) {
             player.pause()
-
             handleListener(MuzicState.PAUSE)
         }
     }
 
     fun stop() {
         player.stop()
+        Log.d(TAG, "Muzic Current: On Stop")
+        Log.d(TAG, "Muzic Current: ${nowPlaylist.getCurrentMuzic()}")
         stopForeground(true)
-
         handleListener(MuzicState.IDLE)
     }
 
@@ -139,17 +146,21 @@ class MuzicService : Service() {
 
     fun addMusicToPlaylistAndPlay(muzic: Muzic) {
 
-        var index = -1
+        if (nowPlaylist.isExistedMuzic(muzic)) {
+            val index = nowPlaylist.indexOfMuzic(muzic)
+            if (index == nowPlaylist.currentPosition) {
+                if (player.isPlaying) {
 
-        if (isExistedMuzic(muzic)) {
-            index = nowPlaylist.indexOfMuzic(muzic)
-            if (nowPlaylist.currentPosition != index) {
+                } else {
+                    if (muzicState == MuzicState.PAUSE) player.start()
+                    else play()
+                }
+            } else {
                 nowPlaylist.currentPosition = index
                 play()
             }
         } else {
-            index = nowPlaylist.addMusic(muzic)
-            nowPlaylist.currentPosition = index
+            nowPlaylist.addMusicAndPlay(muzic)
             play()
         }
     }
@@ -174,9 +185,9 @@ class MuzicService : Service() {
         return player?.isPlaying
     }
 
-    fun buildNotification(): Notification {
+    fun buildNotification(state: MuzicState): Notification {
 
-        Log.d("AppLog", "Build Notification")
+//        Log.d("AppLog", "Build Notification")
 
         val pendingIntent: PendingIntent = Intent(this, MainActivity::class.java).let { notificationIntent ->
             PendingIntent.getActivity(this, 0, notificationIntent, 0)
@@ -204,12 +215,20 @@ class MuzicService : Service() {
             PendingIntent.getService(this, 1, it, 0)
         }
 
-        notificationLayout.setTextViewText(R.id.tv_name, nowPlaylist.getPlayingMuzic().name)
-
+        notificationLayout.setTextViewText(R.id.tv_name, nowPlaylist.getCurrentMuzic().name)
         notificationLayout.setOnClickPendingIntent(R.id.btn_play_or_pause, playIntent)
         notificationLayout.setOnClickPendingIntent(R.id.btn_stop, stopIntent)
         notificationLayout.setOnClickPendingIntent(R.id.btn_next, nextIntent)
         notificationLayout.setOnClickPendingIntent(R.id.btn_previous, previousIntent)
+
+        when(state) {
+            MuzicState.PLAY -> {
+                notificationLayout.setImageViewResource(R.id.btn_play_or_pause, R.drawable.ic_pause)
+            }
+            MuzicState.PAUSE -> {
+                notificationLayout.setImageViewResource(R.id.btn_play_or_pause, R.drawable.ic_play_arrow)
+            }
+        }
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_play_arrow)
@@ -220,9 +239,11 @@ class MuzicService : Service() {
             .build()
     }
 
+    /**
+     * above android O, must create notification channel before create notification
+     * */
     private fun createNotificationChannel() {
 
-        Log.d("Muzic Service", "Create Chanel")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "kMuzic"
@@ -246,13 +267,18 @@ class MuzicService : Service() {
         })
     }
 
+    /**
+     * handle all callback in list listener
+     * */
     fun handleListener(state: MuzicState) {
+        muzicState = state
         for (it in listener) {
             it.onChanged(state)
         }
     }
 
     override fun onDestroy() {
+        Log.d("Muzic Service", "on Destroy")
         super.onDestroy()
         stop()
     }

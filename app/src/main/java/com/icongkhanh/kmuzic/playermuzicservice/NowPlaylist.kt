@@ -1,5 +1,8 @@
 package com.icongkhanh.kmuzic.playermuzicservice
 
+import android.util.Log
+import java.util.*
+
 class NowPlaylist {
 
     val listMuzic: MutableList<Muzic>
@@ -10,7 +13,7 @@ class NowPlaylist {
         currentPosition = -1
     }
 
-    fun getPlayingMuzic() : Muzic{
+    fun getCurrentMuzic() : Muzic {
         return listMuzic[currentPosition]
     }
 
@@ -38,11 +41,28 @@ class NowPlaylist {
      *  return index of music have just added
      * */
     fun addMusic(muzic: Muzic) : Int {
-        listMuzic.add(muzic)
-        return listMuzic.indexOf(muzic)
+        if (isExistedMuzic(muzic)) {
+            return listMuzic.indexOf(muzic)
+        } else {
+            listMuzic.add(muzic)
+            return listMuzic.indexOf(muzic)
+        }
+    }
+
+    fun addMusicAndPlay(muzic: Muzic) {
+        if (isExistedMuzic(muzic)) {
+            currentPosition = listMuzic.indexOf(muzic)
+        } else {
+            listMuzic.add(muzic)
+            currentPosition = listMuzic.indexOf(muzic)
+        }
     }
 
     fun indexOfMuzic(muzic: Muzic): Int {
         return listMuzic.indexOf(muzic)
+    }
+
+    fun reset() {
+
     }
 }

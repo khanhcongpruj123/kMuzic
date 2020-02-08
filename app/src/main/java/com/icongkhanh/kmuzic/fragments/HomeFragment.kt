@@ -73,7 +73,7 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener {
     }
 
     override fun onChanged(state: MuzicState) {
-        Log.d("Home Fragement", "Muzic State: ${state}")
+//        Log.d("Home Fragement", "Muzic State: ${state}")
         when(state) {
             MuzicState.PLAY -> btnPlayPause.setImageResource(R.drawable.ic_pause)
             MuzicState.PAUSE -> btnPlayPause.setImageResource(R.drawable.ic_play_arrow)
