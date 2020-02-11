@@ -1,11 +1,9 @@
 package com.icongkhanh.kmuzic
 
 import android.Manifest
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
-import com.icongkhanh.kmuzic.playermuzicservice.MuzicService
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
@@ -18,7 +16,9 @@ class MainActivity : AppCompatActivity() {
 
         requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
         muzicPlayer.bind()
+
     }
+
 
     override fun onResume() {
         super.onResume()

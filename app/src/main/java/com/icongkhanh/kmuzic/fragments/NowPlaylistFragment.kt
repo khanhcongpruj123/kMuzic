@@ -3,29 +3,21 @@ package com.icongkhanh.kmuzic.fragments
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsSeekBar
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSeekBar
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
-
 import com.icongkhanh.kmuzic.R
 import com.icongkhanh.kmuzic.adapters.ListMusicAdapter
-import com.icongkhanh.kmuzic.playermuzicservice.Muzic
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
 import com.icongkhanh.kmuzic.viewmodels.NowPlaylistViewModel
-import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
-/**
- * A simple [Fragment] subclass.
- */
 class NowPlaylistFragment : Fragment() {
 
     companion object {
@@ -51,7 +43,7 @@ class NowPlaylistFragment : Fragment() {
         })
 
         viewmodel.stateMuzic.observe(this, Observer {
-            when(it) {
+            when (it) {
                 MuzicState.PLAY -> {
                     btnPlayOrPause.setImageResource(R.drawable.ic_pause_circle_filled_black_48dp)
                 }
@@ -68,7 +60,7 @@ class NowPlaylistFragment : Fragment() {
         viewmodel.currentPlayingPos.observe(this, Observer {
             val currMusic = viewmodel.listMusic.value?.get(it)
             Log.d(TAG, "On Oserver Current Muzic: ${currMusic?.name}")
-            currMusic?.let {muzic ->
+            currMusic?.let { muzic ->
                 tvAuthorName.text = muzic.authorName
                 tvMusicName.text = muzic.name
             }
