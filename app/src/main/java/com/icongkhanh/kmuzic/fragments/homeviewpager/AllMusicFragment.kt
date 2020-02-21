@@ -2,6 +2,7 @@ package com.icongkhanh.kmuzic.fragments.homeviewpager
 
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,20 +21,20 @@ import org.koin.android.viewmodel.ext.android.viewModel
 /**
  * A simple [Fragment] subclass.
  */
-class MusicFragment : Fragment() {
+class AllMusicFragment : Fragment() {
 
     lateinit var listMusicView: RecyclerView
     lateinit var listMusicAdapter: ListMusicAdapter
 
-    val viewModel: MusicViewModel by viewModel()
+    val fragmentViewModelAll: AllMusicFragmentViewModel by viewModel()
     val muzicPlayer: MuzicPlayer by inject()
 
     companion object {
-        private var instance: MusicFragment? = null
+        private var instance: AllMusicFragment? = null
 
         @JvmStatic
-        fun getInstance(): MusicFragment? {
-            if (instance == null) instance = MusicFragment()
+        fun getInstance(): AllMusicFragment? {
+            if (instance == null) instance = AllMusicFragment()
             return instance
         }
     }
@@ -74,16 +75,34 @@ class MusicFragment : Fragment() {
         listMusicView.adapter = listMusicAdapter
 
         //setup observer
-        viewModel.listMuzic.observe(this.viewLifecycleOwner, Observer {
+        fragmentViewModelAll.listMuzic.observe(this.viewLifecycleOwner, Observer {
             listMusicAdapter.updateListMuisc(it)
         })
     }
 
     override fun onStart() {
 
-        Log.d("Music Fragment", "onStart")
         super.onStart()
-        viewModel.onStart()
+
+        if (activity?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            fragmentViewModelAll.onStart()
+        } else {
+            requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 1) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fragmentViewModelAll.onStart()
+            }
+        }
     }
 
 }

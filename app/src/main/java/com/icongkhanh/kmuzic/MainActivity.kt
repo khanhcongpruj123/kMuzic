@@ -14,7 +14,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
         muzicPlayer.bind()
 
     }

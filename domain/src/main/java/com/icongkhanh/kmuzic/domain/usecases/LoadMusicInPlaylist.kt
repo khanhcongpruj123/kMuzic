@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 class LoadMusicInPlaylist (val repository: MuzicRepository) {
 
-    suspend operator fun invoke(playlistId: String): Flow<Muzic> {
+    suspend operator fun invoke(playlistId: String): Flow<List<Muzic>> {
         return repository.loadMusicInPlaylist(playlistId)
     }
 }

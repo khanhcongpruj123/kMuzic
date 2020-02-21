@@ -125,8 +125,6 @@ class MuzicService : Service() {
 
     fun stop() {
         player.stop()
-        Log.d(TAG, "Muzic Current: On Stop")
-        Log.d(TAG, "Muzic Current: ${nowPlaylist.getCurrentMuzic()}")
         stopForeground(true)
         handleListener(MuzicState.IDLE)
     }
@@ -288,7 +286,6 @@ class MuzicService : Service() {
     }
 
     override fun onDestroy() {
-        Log.d("Muzic Service", "on Destroy")
         super.onDestroy()
         stop()
     }

@@ -8,18 +8,14 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 
 class MuzicRepositoryImpl(val memoryMusicLoader: MemoryMusicLoader) : MuzicRepository {
-    override suspend fun loadAllMuzic(isFirstTimeOpenApp: Boolean): Flow<Muzic> = memoryMusicLoader.execute()
+    override suspend fun loadAllMuzic(isFirstTimeOpenApp: Boolean): Flow<List<Muzic>> = memoryMusicLoader.getAllMusic()
 
-    override suspend fun loadMusicInPlaylist(playlistId: String): Flow<Muzic> = flow {
-        memoryMusicLoader.execute().collect {
+    override suspend fun loadMusicInPlaylist(playlistId: String): Flow<List<Muzic>> = flow {
 
-        }
     }
 
-    override suspend fun loadFavoriteMuzic(): Flow<Muzic> = flow {
-        memoryMusicLoader.execute().collect {
-            if (it.isFavorite) emit(it)
-        }
+    override suspend fun loadFavoriteMuzic(): Flow<List<Muzic>> = flow {
+
     }
 
     override suspend fun addToFavorite(muzicId: String) {

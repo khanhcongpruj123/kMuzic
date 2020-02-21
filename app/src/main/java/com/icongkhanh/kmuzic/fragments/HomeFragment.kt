@@ -1,5 +1,7 @@
 package com.icongkhanh.kmuzic.fragments
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -77,6 +79,12 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener {
         btnPrevious.setOnClickListener {
             muzicPlayer.previous()
         }
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+
 
     }
 

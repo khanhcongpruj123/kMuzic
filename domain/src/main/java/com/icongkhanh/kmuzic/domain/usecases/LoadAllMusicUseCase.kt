@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 class LoadAllMusicUseCase(val repository: MuzicRepository) {
 
-    suspend operator fun invoke(isFirstTimeOpenApp: Boolean): Flow<Muzic> {
+    suspend operator fun invoke(isFirstTimeOpenApp: Boolean): Flow<List<Muzic>> {
         return repository.loadAllMuzic(isFirstTimeOpenApp)
     }
 }

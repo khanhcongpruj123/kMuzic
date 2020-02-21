@@ -1,14 +1,21 @@
 package com.icongkhanh.kmuzic.data.local.memory
 
 import android.content.Context
+import android.media.MediaMetadataRetriever
+import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import com.icongkhanh.kmuzic.domain.models.Muzic
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.io.File
+import java.util.*
 
 class MemoryMusicLoader(val context: Context) {
 
+
     suspend fun execute(): Flow<Muzic> = flow {
+
         val contentProvider = context.contentResolver
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
@@ -34,7 +41,57 @@ class MemoryMusicLoader(val context: Context) {
         }
     }
 
+    suspend fun getAllMusic() = flow<List<Muzic>> {
+
+        val rootDir = Environment.getExternalStorageDirectory()
+
+        val listMuzicPath = mutableListOf<String>()
+        val listMuzic = mutableListOf<Muzic>()
+
+        scanMusic(rootDir, listMuzicPath)
+
+        listMuzicPath.forEach {
+
+            Log.d(TAG, "Loaded: $it")
+
+            val mr = MediaMetadataRetriever()
+            mr.setDataSource(it)
+
+            val name = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+            val author = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR)
+
+
+            listMuzic.add(Muzic(
+                UUID.randomUUID().toString(),
+                name,
+                author,
+                false,
+                it
+            ))
+
+            mr.release()
+
+            emit(listMuzic)
+        }
+
+    }
+
+    fun scanMusic(dir: File, list: MutableList<String>) {
+
+        if (dir.isFile) {
+            val name = dir.name
+            if (name.endsWith(".mp3")) {
+                Log.d(TAG, "Loading: ${dir.absolutePath}")
+                list.add(dir.absolutePath)
+            } else return
+        } else if (dir.isDirectory) {
+            dir.listFiles().forEach {
+                scanMusic(it, list)
+            }
+        }
+    }
+
     companion object {
-        val TAG = "AppLog"
+        val TAG = this::class.java.simpleName
     }
 }
