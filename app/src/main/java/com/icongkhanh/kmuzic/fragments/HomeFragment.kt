@@ -97,4 +97,8 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener {
         }
     }
 
+    override fun onDestroy() {
+        muzicPlayer.destroy(this)
+        super.onDestroy()
+    }
 }

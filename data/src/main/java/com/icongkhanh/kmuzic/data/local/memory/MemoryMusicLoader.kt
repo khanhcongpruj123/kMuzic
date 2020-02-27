@@ -57,8 +57,8 @@ class MemoryMusicLoader(val context: Context) {
             val mr = MediaMetadataRetriever()
             mr.setDataSource(it)
 
-            val name = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-            val author = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR)
+            val name = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+            val author = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
 
 
             listMuzic.add(Muzic(

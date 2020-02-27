@@ -13,7 +13,7 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(), OnMuzicP
 
     private var getProgressMuzicTimer: Timer
     val listMusic = MutableLiveData<List<Muzic>>()
-    val currentPlayingPos = MutableLiveData(-1)
+    val currentPlayingMuzic = MutableLiveData<Muzic>()
     val stateMuzic = MutableLiveData<MuzicState>()
     val progressMusic = MutableLiveData<Float>(0f)
 
@@ -51,7 +51,7 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(), OnMuzicP
     }
 
     override fun onChanged(muzic: com.icongkhanh.kmuzic.playermuzicservice.Muzic) {
-        currentPlayingPos.postValue(listMusic.value?.indexOf(muzic.toDomainModel()))
+        currentPlayingMuzic.postValue(muzic.toDomainModel())
     }
 
     fun onPressPlayOrPause() {
@@ -67,6 +67,8 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(), OnMuzicP
     }
 
     override fun onCleared() {
+
+        onStop()
         super.onCleared()
     }
 
@@ -100,5 +102,12 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(), OnMuzicP
             it.isFavorite,
             it.path
         ))
+    }
+
+    fun onStop() {
+        getProgressMuzicTimer?.let {
+            it.cancel()
+        }
+        muzicPlayer.destroy(this)
     }
 }

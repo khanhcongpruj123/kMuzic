@@ -26,7 +26,7 @@ class AllMusicFragment : Fragment() {
     lateinit var listMusicView: RecyclerView
     lateinit var listMusicAdapter: ListMusicAdapter
 
-    val fragmentViewModelAll: AllMusicFragmentViewModel by viewModel()
+    val viewModel: AllMusicFragmentViewModel by viewModel()
     val muzicPlayer: MuzicPlayer by inject()
 
     companion object {
@@ -75,7 +75,7 @@ class AllMusicFragment : Fragment() {
         listMusicView.adapter = listMusicAdapter
 
         //setup observer
-        fragmentViewModelAll.listMuzic.observe(this.viewLifecycleOwner, Observer {
+        viewModel.listMuzic.observe(this.viewLifecycleOwner, Observer {
             listMusicAdapter.updateListMuisc(it)
         })
     }
@@ -85,9 +85,19 @@ class AllMusicFragment : Fragment() {
         super.onStart()
 
         if (activity?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            fragmentViewModelAll.onStart()
+
         } else {
             requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (savedInstanceState == null) {
+            if (activity?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                viewModel.onStart()
+            }
         }
     }
 
@@ -100,9 +110,15 @@ class AllMusicFragment : Fragment() {
 
         if (requestCode == 1) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                fragmentViewModelAll.onStart()
+                viewModel.onStart()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        muzicPlayer.destroy(this)
     }
 
 }

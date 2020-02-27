@@ -11,9 +11,9 @@ class HomeViewPagerAdapter(val fm: FragmentManager)
 
     override fun getItem(position: Int): Fragment {
         return when(position) {
-            0 -> AllMusicFragment.getInstance()!!
-            1 -> FavoriteMusicFragment.getInstance()!!
-            else -> AllMusicFragment.getInstance()!!
+            0 -> AllMusicFragment()
+            1 -> FavoriteMusicFragment()
+            else -> AllMusicFragment()
         }
     }
 

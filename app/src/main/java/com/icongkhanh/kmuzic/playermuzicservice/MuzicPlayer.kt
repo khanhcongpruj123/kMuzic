@@ -115,4 +115,9 @@ class MuzicPlayer(val context: Context) {
     fun getProgress() = muzicService?.getProgress()
 
     fun getCurrentMuzic() = muzicService?.nowPlaylist?.getCurrentMuzic()
+
+    fun destroy(any: Any) {
+        if (any is OnMuzicPlayingChangedListener) muzicPlayingListener.remove(any)
+        if (any is OnMuzicStateChangedListener) stateMuzicListener.remove(any)
+    }
 }
