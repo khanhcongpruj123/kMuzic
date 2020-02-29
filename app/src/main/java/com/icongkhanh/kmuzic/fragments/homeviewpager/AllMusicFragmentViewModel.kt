@@ -22,6 +22,7 @@ class AllMusicFragmentViewModel(
     }
 
     fun onStart() {
+        Log.d(TAG, "On Start")
         loadMusic()
     }
 
