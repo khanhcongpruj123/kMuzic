@@ -12,7 +12,11 @@
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_homeFragment_to_nowPlaylistFragment"
-            app:destination="@id/nowPlaylistFragment" />
+            app:destination="@id/nowPlaylistFragment"
+            app:enterAnim="@anim/slide_up"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/slide_down" />
     </fragment>
     <fragment
         android:id="@+id/nowPlaylistFragment"

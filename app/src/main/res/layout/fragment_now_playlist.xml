@@ -3,46 +3,78 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.NowPlaylistFragment">
 
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        android:background="?android:selectableItemBackground"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_keyboard_arrow_down_black_30dp"
+        android:tint="@android:color/white"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list_music"
-        android:padding="5dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    <androidx.constraintlayout.widget.ConstraintLayout
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@id/music_name"
+        android:layout_height="0dp"
         android:layout_width="match_parent"
-        android:layout_height="0dp"/>
+        app:layout_constraintBottom_toTopOf="@id/music_progress">
 
-    <TextView
-        android:id="@+id/music_name"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/author_name"
-        android:textColor="#000000"
-        android:textSize="20sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/author_name"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/music_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/music_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toTopOf="@id/author_name"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/thumbnail" />
+
+        <TextView
+            android:id="@+id/author_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/music_name" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.appcompat.widget.AppCompatSeekBar
-        android:max="100"
-        app:layout_constraintBottom_toTopOf="@id/controller"
         android:id="@+id/music_progress"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         android:layout_width="@dimen/width_music_progress_bar"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progressTint="@android:color/white"
+        android:secondaryProgressTint="@color/gray"
+        android:thumbTint="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/controller"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <LinearLayout
         app:layout_constraintLeft_toRightOf="parent"
@@ -55,6 +87,7 @@
         android:layout_height="wrap_content">
 
         <ImageButton
+            android:tint="@android:color/white"
             android:id="@+id/btn_previous"
             android:layout_margin="10dp"
             android:background="?android:selectableItemBackground"
@@ -63,6 +96,7 @@
             android:layout_height="@dimen/size_large_button_controller" />
 
         <ImageButton
+            android:tint="@android:color/white"
             android:id="@+id/btn_play_or_pause"
             android:layout_margin="10dp"
             android:background="?android:selectableItemBackground"
@@ -71,6 +105,7 @@
             android:layout_height="@dimen/size_large_button_controller" />
 
         <ImageButton
+            android:tint="@android:color/white"
             android:id="@+id/btn_next"
             android:layout_margin="10dp"
             android:background="?android:selectableItemBackground"
