@@ -107,9 +107,16 @@ class MuzicService : Service() {
             it.prepare()
             it.start()
 
-            handleListener(MuzicState.PLAY)
+            handleMuzicStateListener(MuzicState.PLAY)
+            handleMuzicPlayingChangedListener(nowPlaylist.getCurrentMuzic())
         }
 
+    }
+
+    private fun handleMuzicPlayingChangedListener(currentMuzic: Muzic?) {
+        muzicPlayingChangedListener.forEach { callback ->
+            currentMuzic?.let { callback.onChanged(it) }
+        }
     }
 
     fun isExistedMuzic(muzic: Muzic) : Boolean {
@@ -119,14 +126,14 @@ class MuzicService : Service() {
     fun pause() {
         if (player.isPlaying) {
             player.pause()
-            handleListener(MuzicState.PAUSE)
+            handleMuzicStateListener(MuzicState.PAUSE)
         }
     }
 
     fun stop() {
         player.stop()
         stopForeground(true)
-        handleListener(MuzicState.IDLE)
+        handleMuzicStateListener(MuzicState.IDLE)
     }
 
     fun next() {
@@ -167,15 +174,15 @@ class MuzicService : Service() {
     fun playOrPause() {
         if (player.isPlaying) {
             player.pause()
-            handleListener(MuzicState.PAUSE)
+            handleMuzicStateListener(MuzicState.PAUSE)
         }
         else {
             if (nowPlaylist.currentPosition == -1) {
-                handleListener(MuzicState.IDLE)
+                handleMuzicStateListener(MuzicState.IDLE)
             }
             else {
                 player.start()
-                handleListener(MuzicState.PLAY)
+                handleMuzicStateListener(MuzicState.PLAY)
             }
         }
     }
@@ -271,14 +278,13 @@ class MuzicService : Service() {
             override fun onChanged(muzic: Muzic) {
                 listener(muzic)
             }
-
         })
     }
 
     /**
      * handle all callback in list listener
      * */
-    fun handleListener(state: MuzicState) {
+    fun handleMuzicStateListener(state: MuzicState) {
         muzicState = state
         for (it in stateMuzicListener) {
             it.onChanged(state)

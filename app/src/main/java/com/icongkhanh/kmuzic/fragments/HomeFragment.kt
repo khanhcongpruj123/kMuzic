@@ -94,7 +94,6 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener, OnMuzicPlayingChan
     }
 
     override fun onChanged(muzic: Muzic) {
-//        Log.d("HomeFragment", "On Music Changed: ")
         tvMusicName.text = "${muzic.name} \t\t ${muzic.author}"
         Log.d("HomeFragment", "On Music Changed: ${tvMusicName.text}")
         Glide.with(this).load(BitmapUtils.getBitmapFromMusicFile(muzic.path)).into(imgThumbnail)
