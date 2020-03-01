@@ -30,7 +30,7 @@ class MemoryMusicLoader(val context: Context) {
 
         val cursor = contentProvider.query(uri, projection, selection, null, sortOrder)
         val list = mutableListOf<Muzic>()
-        cursor?.let {cursor ->
+        cursor?.let { cursor ->
             while (cursor.moveToNext()) {
                 val id = cursor.getString(0)
                 val artist = cursor.getString(1)
@@ -40,8 +40,8 @@ class MemoryMusicLoader(val context: Context) {
                 list.add(Muzic(id, title, artist, false, path))
                 emit(list)
             }
-            cursor.close()
         }
+        cursor?.close()
     }
 
     suspend fun getAllMusic() = flow<List<Muzic>> {
@@ -68,13 +68,15 @@ class MemoryMusicLoader(val context: Context) {
             val author = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
 
 
-            listMuzic.add(Muzic(
-                UUID.randomUUID().toString(),
-                name,
-                author,
-                false,
-                it
-            ))
+            listMuzic.add(
+                Muzic(
+                    UUID.randomUUID().toString(),
+                    name,
+                    author,
+                    false,
+                    it
+                )
+            )
 
             mr.release()
 
@@ -100,6 +102,7 @@ class MemoryMusicLoader(val context: Context) {
                 list.add(path)
             }
         }
+        cursor?.close()
     }
 
     fun scanMusicBeforeQ(dir: File, list: MutableList<String>) {
@@ -108,7 +111,15 @@ class MemoryMusicLoader(val context: Context) {
             val name = dir.name
             if (name.endsWith(".mp3")) {
                 Log.d(TAG, "Loading: ${dir.absolutePath}")
-                list.add(dir.absolutePath)
+
+                val mr = MediaMetadataRetriever()
+                mr.setDataSource(dir.absolutePath)
+                val duration =
+                    mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION).toInt()
+                val name = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+
+                if (duration > 5000 && name != null && !name.isBlank()) list.add(dir.absolutePath)
+                mr.release()
             } else return
         } else if (dir.isDirectory) {
             dir.listFiles()?.forEach {
