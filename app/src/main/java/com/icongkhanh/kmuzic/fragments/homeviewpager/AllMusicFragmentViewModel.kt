@@ -1,41 +1,23 @@
 package com.icongkhanh.kmuzic.fragments.homeviewpager
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.liveData
 import com.icongkhanh.kmuzic.domain.models.Muzic
 import com.icongkhanh.kmuzic.domain.usecases.LoadAllMusicUseCase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 class AllMusicFragmentViewModel(
     val loadAllMusic: LoadAllMusicUseCase
 ) : ViewModel() {
 
-    var listMuzic = MutableLiveData<List<Muzic>>()
-    var _listMuzic = mutableListOf<Muzic>()
+    var listMuzic = liveData<List<Muzic>>(Dispatchers.IO) {
+        val result = loadAllMusic(true).asLiveData()
+        emitSource(result)
+    }
 
     companion object {
         val TAG = "MusicViewModel"
-    }
-
-    fun onStart() {
-        Log.d(TAG, "On Start")
-        loadMusic()
-    }
-
-    fun loadMusic() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _listMuzic.clear()
-            loadAllMusic(true).collect {
-                Log.d(TAG, "Music: ${it}")
-                _listMuzic.clear()
-                _listMuzic.addAll(it)
-                listMuzic.postValue(_listMuzic)
-            }
-        }
     }
 
 }

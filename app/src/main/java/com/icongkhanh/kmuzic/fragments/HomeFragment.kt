@@ -88,8 +88,12 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener, OnMuzicPlayingChan
         }
     }
 
+    override fun onStop() {
+        muzicPlayer.unsubscribe(this)
+        super.onStop()
+    }
+
     override fun onDestroy() {
-        muzicPlayer.destroy(this)
         super.onDestroy()
     }
 

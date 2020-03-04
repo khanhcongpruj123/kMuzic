@@ -108,6 +108,6 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(), OnMuzicP
         getProgressMuzicTimer?.let {
             it.cancel()
         }
-        muzicPlayer.destroy(this)
+        muzicPlayer.unsubscribe(this)
     }
 }

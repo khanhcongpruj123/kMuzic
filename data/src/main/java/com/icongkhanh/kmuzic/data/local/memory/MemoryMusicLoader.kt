@@ -46,7 +46,7 @@ class MemoryMusicLoader(val context: Context) {
 
     suspend fun getAllMusic() = flow<List<Muzic>> {
 
-
+        Log.d(TAG, "Get All Music!")
         val listMuzicPath = mutableListOf<String>()
         val listMuzic = mutableListOf<Muzic>()
 
@@ -56,8 +56,6 @@ class MemoryMusicLoader(val context: Context) {
             val rootDir = Environment.getExternalStorageDirectory()
             scanMusicBeforeQ(rootDir, listMuzicPath)
         }
-
-
 
         listMuzicPath.forEach {
 
@@ -110,16 +108,16 @@ class MemoryMusicLoader(val context: Context) {
         if (dir.isFile) {
             val name = dir.name
             if (name.endsWith(".mp3")) {
-                Log.d(TAG, "Loading: ${dir.absolutePath}")
+                try {
+                    Log.d(TAG, "Loading: ${dir.absolutePath}")
 
-                val mr = MediaMetadataRetriever()
-                mr.setDataSource(dir.absolutePath)
-                val duration =
-                    mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION).toInt()
-                val name = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+                    if (isValidFile(dir)) list.add(dir.absolutePath)
 
-                if (duration > 5000 && name != null && !name.isBlank()) list.add(dir.absolutePath)
-                mr.release()
+                } catch (ex: RuntimeException) {
+                    Log.d(TAG, ex.message)
+                    ex.printStackTrace()
+                    return
+                }
             } else return
         } else if (dir.isDirectory) {
             dir.listFiles()?.forEach {
@@ -130,5 +128,20 @@ class MemoryMusicLoader(val context: Context) {
 
     companion object {
         val TAG = "MemoryMusicLoader"
+    }
+
+    fun isValidFile(musicFile: File): Boolean {
+        if (musicFile.length() <= 0) return false
+
+        val mr = MediaMetadataRetriever()
+        mr.setDataSource(musicFile.absolutePath)
+
+        val duration = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION).toInt()
+        val name = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+
+        mr.release()
+
+        if (duration <= 5000 && name.isBlank() || name == null || name.isBlank()) return false
+        return true
     }
 }

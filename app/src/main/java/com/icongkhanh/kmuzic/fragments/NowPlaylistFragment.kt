@@ -124,7 +124,6 @@ class NowPlaylistFragment : Fragment() {
     }
 
     override fun onStop() {
-
         viewmodel.onStop()
         super.onStop()
     }

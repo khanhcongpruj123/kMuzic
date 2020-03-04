@@ -30,13 +30,7 @@ class AllMusicFragment : Fragment() {
     val muzicPlayer: MuzicPlayer by inject()
 
     companion object {
-        private var instance: AllMusicFragment? = null
-
-        @JvmStatic
-        fun getInstance(): AllMusicFragment? {
-            if (instance == null) instance = AllMusicFragment()
-            return instance
-        }
+        val TAG = "AllMusicFragment"
     }
 
     override fun onAttach(context: Context) {
@@ -49,18 +43,17 @@ class AllMusicFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_all_music, container, false)
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        val view = inflater.inflate(R.layout.fragment_all_music, container, false)
 
         listMusicView = view.findViewById(R.id.list_music)
 
-        //setup view
+        //init adapter for rcv list music
         listMusicAdapter = ListMusicAdapter(context!!)
+
+        //play music when user press item music
         listMusicAdapter.setOnPressItem { muzic ->
-            Log.d("AppLog", "Path: ${muzic.path}")
+            Log.d(TAG, "Path: ${muzic.path}")
             muzicPlayer.play(
                 Muzic(
                     muzic.id,
@@ -72,12 +65,22 @@ class AllMusicFragment : Fragment() {
             )
         }
 
+        // set adapter for rcv list music
         listMusicView.adapter = listMusicAdapter
 
-        //setup observer
-        viewModel.listMuzic.observe(this.viewLifecycleOwner, Observer {
-            listMusicAdapter.updateListMuisc(it)
-        })
+
+        // check permission if it is granted, start load music
+        if (activity?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            subscribeUi()
+        }
+
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
     }
 
     override fun onStart() {
@@ -90,15 +93,9 @@ class AllMusicFragment : Fragment() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // check perimisson if it is granted, start load music
-        if (activity?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            viewModel.onStart()
-        }
-    }
-
+    /**
+     * handle onRequestPermissionsResult(), if result is granted then subscribeUi()
+     * */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -108,15 +105,29 @@ class AllMusicFragment : Fragment() {
 
         if (requestCode == 1) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                viewModel.onStart()
+                subscribeUi()
             }
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-        muzicPlayer.destroy(this)
+    override fun onStop() {
+        // unsubcribe listener MuzicPlayer
+        muzicPlayer.unsubscribe(this)
+        super.onStop()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    /**
+     *  subscribe viewmodel's data
+     * */
+    private fun subscribeUi() {
+        Log.d(TAG, "Start Observer!")
+        viewModel.listMuzic.observe(this.viewLifecycleOwner, Observer {
+            Log.d(TAG, "List Music: ${it.size}")
+            listMusicAdapter.updateListMuisc(it)
+        })
+    }
 }

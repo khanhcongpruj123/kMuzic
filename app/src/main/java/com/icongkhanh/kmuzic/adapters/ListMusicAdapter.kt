@@ -11,6 +11,10 @@ import com.bumptech.glide.Glide
 import com.icongkhanh.kmuzic.R
 import com.icongkhanh.kmuzic.domain.models.Muzic
 import com.icongkhanh.kmuzic.utils.BitmapUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAdapter.LocalViewHoder>() {
 
@@ -51,10 +55,18 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
         holder.authorName.text = item.authorName
         holder.musicName.text = item.name
 
-        Glide.with(context)
-            .asBitmap()
-            .load(BitmapUtils.getBitmapFromMusicFile(item.path))
-            .into(holder.thumnail)
+        /**
+         * async get bitmap from mp3 file
+         * */
+        CoroutineScope(Dispatchers.Default).launch {
+            val imgBm = BitmapUtils.getBitmapFromMusicFile(item.path)
+            withContext(Dispatchers.Main) {
+                Glide.with(context)
+                    .asBitmap()
+                    .load(imgBm)
+                    .into(holder.thumnail)
+            }
+        }
 
         holder.itemView.setOnClickListener {
             onPressItem(item)
