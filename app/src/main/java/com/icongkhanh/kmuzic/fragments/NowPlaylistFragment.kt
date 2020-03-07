@@ -5,17 +5,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
+import androidx.viewpager.widget.ViewPager
 import com.icongkhanh.kmuzic.R
+import com.icongkhanh.kmuzic.fragments.nowplaylistviewpager.PlaylistFragment
+import com.icongkhanh.kmuzic.fragments.nowplaylistviewpager.ThumbnailFragment
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
-import com.icongkhanh.kmuzic.utils.BitmapUtils
 import com.icongkhanh.kmuzic.viewmodels.NowPlaylistViewModel
+import com.icongkhanh.scaledviewpager.ScaledFragmentPagerAdapter
+import com.icongkhanh.scaledviewpager.ScaledTransformer
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class NowPlaylistFragment : Fragment() {
@@ -26,9 +28,7 @@ class NowPlaylistFragment : Fragment() {
 
     private val viewmodel: NowPlaylistViewModel by viewModel()
 
-    //    lateinit var listMuzic: RecyclerView
-//    lateinit var adapterMuzic: ListMusicAdapter
-    lateinit var imgThumbnail: ImageView
+    lateinit var pager: ViewPager
     lateinit var btnPlayOrPause: ImageButton
     lateinit var btnNext: ImageButton
     lateinit var btnPrevious: ImageButton
@@ -36,6 +36,8 @@ class NowPlaylistFragment : Fragment() {
     lateinit var tvMusicName: TextView
     lateinit var tvAuthorName: TextView
     lateinit var btnBack: ImageButton
+    lateinit var scaledTransformer: ScaledTransformer
+    lateinit var scaledPagerAdapter: ScaledFragmentPagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,14 +53,13 @@ class NowPlaylistFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_now_playlist, container, false)
 
-//        listMuzic = view.findViewById(R.id.list_music)
         btnNext = view.findViewById(R.id.btn_next)
         btnPlayOrPause = view.findViewById(R.id.btn_play_or_pause)
         btnPrevious = view.findViewById(R.id.btn_previous)
         seekBar = view.findViewById(R.id.music_progress)
         tvAuthorName = view.findViewById(R.id.author_name)
         tvMusicName = view.findViewById(R.id.music_name)
-        imgThumbnail = view.findViewById(R.id.thumbnail)
+        pager = view.findViewById(R.id.pager)
         btnBack = view.findViewById(R.id.btn_back)
 
         btnPlayOrPause.setOnClickListener {
@@ -77,17 +78,17 @@ class NowPlaylistFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-//        adapterMuzic = ListMusicAdapter(context!!)
-//
-//        adapterMuzic.setOnPressItem {
-//            viewmodel.onPressItemMuzic(it)
-//        }
-//
-//        listMuzic.adapter = adapterMuzic
-//
-//        viewmodel.listMusic.observe(viewLifecycleOwner, Observer {
-//            adapterMuzic.updateListMuisc(it)
-//        })
+        //init adapter pager and transformer
+        scaledPagerAdapter = ScaledFragmentPagerAdapter(childFragmentManager)
+        scaledTransformer = ScaledTransformer(pager, scaledPagerAdapter)
+
+        // setup adapter
+        scaledPagerAdapter.addFragment(PlaylistFragment())
+        scaledPagerAdapter.addFragment(ThumbnailFragment())
+        pager.adapter = scaledPagerAdapter
+        pager.addOnPageChangeListener(scaledTransformer)
+        pager.setPageTransformer(false, scaledTransformer)
+        pager.offscreenPageLimit = 3
 
         // subcribe Ui
         viewmodel.stateMuzic.observe(viewLifecycleOwner, Observer {
@@ -110,8 +111,6 @@ class NowPlaylistFragment : Fragment() {
             currMusic?.let { muzic ->
                 tvAuthorName.text = muzic.authorName
                 tvMusicName.text = muzic.name
-                Glide.with(this).load(BitmapUtils.getBitmapFromMusicFile(muzic.path))
-                    .into(imgThumbnail)
             }
         })
 

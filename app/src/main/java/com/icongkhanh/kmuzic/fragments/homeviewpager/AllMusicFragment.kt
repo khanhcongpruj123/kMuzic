@@ -1,7 +1,6 @@
 package com.icongkhanh.kmuzic.fragments.homeviewpager
 
 
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -31,11 +30,6 @@ class AllMusicFragment : Fragment() {
 
     companion object {
         val TAG = "AllMusicFragment"
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
     }
 
     override fun onCreateView(
@@ -70,7 +64,7 @@ class AllMusicFragment : Fragment() {
 
 
         // check permission if it is granted, start load music
-        if (activity?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        if (checkReadPermission()) {
             subscribeUi()
         }
 
@@ -88,7 +82,7 @@ class AllMusicFragment : Fragment() {
         super.onStart()
 
         // check permission if it is not granted, request permission
-        if (activity?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (checkReadPermission()) {
             requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1)
         }
     }
@@ -130,4 +124,9 @@ class AllMusicFragment : Fragment() {
             listMusicAdapter.updateListMuisc(it)
         })
     }
+
+    private fun checkReadPermission(): Boolean {
+        return activity?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+    }
+
 }

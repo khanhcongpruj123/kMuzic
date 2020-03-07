@@ -49,6 +49,7 @@ dependencies {
 
     implementation project(":domain")
     implementation project(":data")
+    implementation project(":scaledviewpager")
 
     // Koin for Android
     def koin_version = "2.0.1"
