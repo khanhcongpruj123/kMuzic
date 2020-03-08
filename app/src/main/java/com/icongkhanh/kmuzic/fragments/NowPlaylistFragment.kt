@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.transition.MaterialContainerTransform
 import com.icongkhanh.kmuzic.R
 import com.icongkhanh.kmuzic.fragments.nowplaylistviewpager.PlaylistFragment
 import com.icongkhanh.kmuzic.fragments.nowplaylistviewpager.ThumbnailFragment
@@ -41,6 +42,8 @@ class NowPlaylistFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        sharedElementEnterTransition = MaterialContainerTransform(requireContext())
 
         viewmodel.onStart()
     }

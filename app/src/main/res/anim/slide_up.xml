@@ -6,7 +6,7 @@
         android:interpolator="@android:anim/linear_interpolator"
         android:toAlpha="1.0" />
     <translate
-        android:duration="200"
+        android:duration="500"
         android:fromYDelta="100%"
         android:toYDelta="0" />
 </set>

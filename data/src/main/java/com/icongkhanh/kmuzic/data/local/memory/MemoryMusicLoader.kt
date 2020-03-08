@@ -2,7 +2,6 @@ package com.icongkhanh.kmuzic.data.local.memory
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
-import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
@@ -51,8 +50,10 @@ class MemoryMusicLoader(val context: Context) {
         val listMuzic = mutableListOf<Muzic>()
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            Log.d(TAG, "Scan Music After Q")
             scanMusicAfterQ(listMuzicPath)
         } else {
+            Log.d(TAG, "Scan Music Before Q")
             val rootDir = Environment.getExternalStorageDirectory()
             scanMusicBeforeQ(rootDir, listMuzicPath)
         }
@@ -86,9 +87,9 @@ class MemoryMusicLoader(val context: Context) {
     fun scanMusicAfterQ(list: MutableList<String>) {
 
         val cr = context.contentResolver
-        val uri =
-            Uri.parse("content://com.android.providers.downloads.documents/document/downloads")
-//        val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+//        val uri =
+//            Uri.parse("content://com.android.providers.downloads.documents/document/downloads")
+        val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0"
         val projection = arrayOf(
             MediaStore.Audio.Media.DATA

@@ -73,8 +73,6 @@ class AllMusicFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
     }
 
     override fun onStart() {
@@ -82,7 +80,7 @@ class AllMusicFragment : Fragment() {
         super.onStart()
 
         // check permission if it is not granted, request permission
-        if (checkReadPermission()) {
+        if (!checkReadPermission()) {
             requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1)
         }
     }
@@ -126,7 +124,7 @@ class AllMusicFragment : Fragment() {
     }
 
     private fun checkReadPermission(): Boolean {
-        return activity?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+        return activity?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
     }
 
 }

@@ -9,10 +9,12 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.transition.Hold
 import com.icongkhanh.kmuzic.R
 import com.icongkhanh.kmuzic.adapters.HomeViewPagerAdapter
 import com.icongkhanh.kmuzic.playermuzicservice.*
@@ -31,6 +33,12 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener, OnMuzicPlayingChan
     lateinit var tvMusicName: TextView
 
     val muzicPlayer: MuzicPlayer by inject()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        exitTransition = Hold()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,7 +69,13 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener, OnMuzicPlayingChan
         //setup event
 
         controllerView.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_nowPlaylistFragment)
+            val extras = FragmentNavigatorExtras(controllerView to "shared_element_container")
+            findNavController().navigate(
+                R.id.action_homeFragment_to_nowPlaylistFragment,
+                null,
+                null,
+                extras
+            )
         }
 
         btnPlayPause.setOnClickListener {
