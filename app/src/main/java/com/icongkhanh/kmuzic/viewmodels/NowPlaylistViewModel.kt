@@ -1,5 +1,6 @@
 package com.icongkhanh.kmuzic.viewmodels
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.icongkhanh.kmuzic.domain.models.Muzic
@@ -11,35 +12,41 @@ import java.util.*
 
 class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(), OnMuzicPlayingChangedListener, OnMuzicStateChangedListener {
 
-    private var getProgressMuzicTimer: Timer
-    val listMusic = MutableLiveData<List<Muzic>>()
-    val currentPlayingMuzic = MutableLiveData<Muzic>()
-    val stateMuzic = MutableLiveData<MuzicState>()
-    val progressMusic = MutableLiveData<Float>(0f)
+    private var getProgressMuzicTimer = Timer()
+
+    private val _listMusic = MutableLiveData<List<Muzic>>()
+    val listMusic: LiveData<List<Muzic>> = _listMusic
+
+    private val _currentPlayingMuzic = MutableLiveData<Muzic>()
+    val currentPlayingMuzic: LiveData<Muzic> = _currentPlayingMuzic
+
+    private val _stateMuzic = MutableLiveData<MuzicState>()
+    val stateMuzic: LiveData<MuzicState> = _stateMuzic
+
+    private val _progressMusic = MutableLiveData<Float>(0f)
+    val progressMusic: LiveData<Float> = _progressMusic
+
 
     init {
         muzicPlayer.let {
             it.addOnStateChangedListener(this)
             it.addOnMuzicPlayingChangedListener(this)
         }
-        getProgressMuzicTimer = Timer()
-    }
 
-    fun onStart() {
         muzicPlayer.muzicState.let {
-            stateMuzic.postValue(it)
+            _stateMuzic.postValue(it)
             onChanged(it)
         }
         muzicPlayer.getCurrentMuzic()?.let {
             onChanged(it)
         }
-        listMusic.postValue(muzicPlayer.getListMusic()?.map {
-           it.toDomainModel()
+        _listMusic.postValue(muzicPlayer.getListMusic()?.map {
+            it.toDomainModel()
         })
     }
 
     override fun onChanged(state: MuzicState) {
-        stateMuzic.postValue(state)
+        _stateMuzic.postValue(state)
         when(state) {
             MuzicState.IDLE, MuzicState.PAUSE -> {
                 stopGetProgressTask()
@@ -51,7 +58,7 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(), OnMuzicP
     }
 
     override fun onChanged(muzic: com.icongkhanh.kmuzic.playermuzicservice.Muzic) {
-        currentPlayingMuzic.postValue(muzic.toDomainModel())
+        _currentPlayingMuzic.postValue(muzic.toDomainModel())
     }
 
     fun onPressPlayOrPause() {
@@ -80,7 +87,7 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(), OnMuzicP
             override fun run() {
                 val progress = muzicPlayer.getProgress()
                 progress?.let {
-                    progressMusic.postValue(it)
+                    _progressMusic.postValue(it)
                 }
             }
 
@@ -90,24 +97,11 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(), OnMuzicP
     }
 
     private fun stopGetProgressTask() {
-
         getProgressMuzicTimer.cancel()
     }
 
-    fun onPressItemMuzic(it: Muzic) {
-        muzicPlayer.play(com.icongkhanh.kmuzic.playermuzicservice.Muzic(
-            it.id,
-            it.name,
-            it.authorName,
-            it.isFavorite,
-            it.path
-        ))
-    }
-
     fun onStop() {
-        getProgressMuzicTimer?.let {
-            it.cancel()
-        }
+        getProgressMuzicTimer.cancel()
         muzicPlayer.unsubscribe(this)
     }
 }

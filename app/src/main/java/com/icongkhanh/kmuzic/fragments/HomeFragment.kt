@@ -69,13 +69,7 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener, OnMuzicPlayingChan
         //setup event
 
         controllerView.setOnClickListener {
-            val extras = FragmentNavigatorExtras(controllerView to "shared_element_container")
-            findNavController().navigate(
-                R.id.action_homeFragment_to_nowPlaylistFragment,
-                null,
-                null,
-                extras
-            )
+            goToNowPlaylistFragment()
         }
 
         btnPlayPause.setOnClickListener {
@@ -115,5 +109,15 @@ class HomeFragment : Fragment(), OnMuzicStateChangedListener, OnMuzicPlayingChan
         tvMusicName.text = "${muzic.name} \t\t ${muzic.author}"
         Log.d("HomeFragment", "On Music Changed: ${tvMusicName.text}")
         Glide.with(this).load(BitmapUtils.getBitmapFromMusicFile(muzic.path)).into(imgThumbnail)
+    }
+
+    private fun goToNowPlaylistFragment() {
+        val extras = FragmentNavigatorExtras(controllerView to "shared_element_container")
+        findNavController().navigate(
+            R.id.action_homeFragment_to_nowPlaylistFragment,
+            null,
+            null,
+            extras
+        )
     }
 }

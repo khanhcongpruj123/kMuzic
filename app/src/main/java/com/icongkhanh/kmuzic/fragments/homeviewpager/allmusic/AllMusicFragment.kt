@@ -1,4 +1,4 @@
-package com.icongkhanh.kmuzic.fragments.homeviewpager
+package com.icongkhanh.kmuzic.fragments.homeviewpager.allmusic
 
 
 import android.content.pm.PackageManager
@@ -24,6 +24,7 @@ class AllMusicFragment : Fragment() {
 
     lateinit var listMusicView: RecyclerView
     lateinit var listMusicAdapter: ListMusicAdapter
+    lateinit var loadingView: View
 
     val viewModel: AllMusicFragmentViewModel by viewModel()
     val muzicPlayer: MuzicPlayer by inject()
@@ -32,15 +33,23 @@ class AllMusicFragment : Fragment() {
         val TAG = "AllMusicFragment"
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d(TAG, "On Create")
+
+        if (checkReadPermission()) subscribeUi()
+        else requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-
+        Log.d(TAG, "On Create View")
         val view = inflater.inflate(R.layout.fragment_all_music, container, false)
 
         listMusicView = view.findViewById(R.id.list_music)
+        loadingView = view.findViewById(R.id.loading_view)
 
         //init adapter for rcv list music
         listMusicAdapter = ListMusicAdapter(context!!)
@@ -62,10 +71,8 @@ class AllMusicFragment : Fragment() {
         // set adapter for rcv list music
         listMusicView.adapter = listMusicAdapter
 
-
-        // check permission if it is granted, start load music
-        if (checkReadPermission()) {
-            subscribeUi()
+        viewModel.viewState.value?.let {
+            renderUi(it)
         }
 
         return view
@@ -78,11 +85,7 @@ class AllMusicFragment : Fragment() {
     override fun onStart() {
 
         super.onStart()
-
-        // check permission if it is not granted, request permission
-        if (!checkReadPermission()) {
-            requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1)
-        }
+        Log.d(TAG, "On Start")
     }
 
     /**
@@ -105,22 +108,34 @@ class AllMusicFragment : Fragment() {
     override fun onStop() {
         // unsubcribe listener MuzicPlayer
         muzicPlayer.unsubscribe(this)
+        Log.d(TAG, "On Stop")
+
         super.onStop()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d(TAG, "On Destroy")
     }
 
     /**
      *  subscribe viewmodel's data
      * */
     private fun subscribeUi() {
-        Log.d(TAG, "Start Observer!")
-        viewModel.listMuzic.observe(this.viewLifecycleOwner, Observer {
-            Log.d(TAG, "List Music: ${it.size}")
-            listMusicAdapter.updateListMuisc(it)
+        Log.d(TAG, "Subscribe UI!")
+        viewModel.viewState.observe(this, Observer { state ->
+            Log.d(TAG, "Call Back!")
+            renderUi(state)
         })
+    }
+
+    private fun renderUi(state: AllMusicContract.ViewState) {
+        //hide or show loading view
+        if (state.isLoading) loadingView.visibility = View.VISIBLE
+        else loadingView.visibility = View.INVISIBLE
+
+        //update list music
+        listMusicAdapter.updateListMuisc(state.musics)
     }
 
     private fun checkReadPermission(): Boolean {

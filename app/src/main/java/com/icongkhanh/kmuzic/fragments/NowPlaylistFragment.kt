@@ -44,8 +44,6 @@ class NowPlaylistFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         sharedElementEnterTransition = MaterialContainerTransform(requireContext())
-
-        viewmodel.onStart()
     }
 
     override fun onCreateView(
