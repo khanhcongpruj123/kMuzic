@@ -28,7 +28,6 @@ android {
 
 dependencies {
 
-
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -40,35 +39,28 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 
     // Navigation
-    def nav_version = "2.2.0"
-    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
-    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation LibrariesDependency.NAVIGATION_FRAGMENT_KTX
+    implementation LibrariesDependency.NAVIGATION_UI_KTX
 
     // Kotlin coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3'
+    implementation LibrariesDependency.ANDROID_COROUTINES
 
-    implementation project(":domain")
-    implementation project(":data")
+    implementation project(ModulesDependency.domain)
+    implementation project(ModulesDependency.data)
 
     // Koin for Android
-    def koin_version = "2.0.1"
-    implementation "org.koin:koin-android:$koin_version"
-    // Koin Android Scope features
-    implementation "org.koin:koin-android-scope:$koin_version"
-    // Koin Android ViewModel features
-    implementation "org.koin:koin-android-viewmodel:$koin_version"
-    // Koin Android Experimental features
-    implementation "org.koin:koin-android-ext:$koin_version"
+    implementation LibrariesDependency.KOIN_ANDROID
+    implementation LibrariesDependency.KOIN_ANDROID_SCROPE
+    implementation LibrariesDependency.KOIN_ANDROID_VIEWMODEL
+    implementation LibrariesDependency.KOIN_ANDROID_EXT
 
-    implementation 'com.google.android.material:material:1.1.0'
+    implementation LibrariesDependency.LIFECYCLE_LIVEDATA_KTX
 
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    implementation LibrariesDependency.MATERIAL_DESIGN
 
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    implementation LibrariesDependency.GLIDE
+    annotationProcessor AnnotationDependency.GLIDE_COMPILER
 
-    implementation 'com.google.android.material:material:1.2.0-alpha04'
+    debugImplementation DebugDependency.LEAK_CANARY
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
-
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
 }

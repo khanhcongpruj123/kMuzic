@@ -105,7 +105,7 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(), OnMuzicP
     }
 
     fun onStop() {
-        getProgressMuzicTimer?.let {
+        getProgressMuzicTimer.let {
             it.cancel()
         }
         muzicPlayer.unsubscribe(this)

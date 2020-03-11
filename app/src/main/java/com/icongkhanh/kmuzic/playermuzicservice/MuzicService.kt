@@ -231,7 +231,7 @@ class MuzicService : Service() {
             MuzicState.PLAY -> {
                 notificationLayout.setImageViewResource(R.id.btn_play_or_pause, R.drawable.ic_pause)
             }
-            MuzicState.PAUSE -> {
+            MuzicState.IDLE, MuzicState.PAUSE -> {
                 notificationLayout.setImageViewResource(R.id.btn_play_or_pause, R.drawable.ic_play_arrow)
             }
         }

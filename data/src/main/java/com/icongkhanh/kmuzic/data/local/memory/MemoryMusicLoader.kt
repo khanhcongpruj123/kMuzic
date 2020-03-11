@@ -30,12 +30,12 @@ class MemoryMusicLoader(val context: Context) {
 
         val cursor = contentProvider.query(uri, projection, selection, null, sortOrder)
         val list = mutableListOf<Muzic>()
-        cursor?.let { cursor ->
-            while (cursor.moveToNext()) {
-                val id = cursor.getString(0)
-                val artist = cursor.getString(1)
-                val title = cursor.getString(2)
-                val path = cursor.getString(3)
+        cursor?.let { c ->
+            while (c.moveToNext()) {
+                val id = c.getString(0)
+                val artist = c.getString(1)
+                val title = c.getString(2)
+                val path = c.getString(3)
 
                 list.add(Muzic(id, title, artist, false, path))
                 emit(list)
