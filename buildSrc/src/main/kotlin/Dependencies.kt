@@ -1,4 +1,5 @@
 object LibraryVersion {
+    const val CIRCLE_PROGRESSBAR = "3.0.3"
     const val LIFECYCLE_LIVEDATA_KTX = "2.2.0"
     const val LEAK_CANARY = "2.2"
     const val GLIDE = "4.11.0"
@@ -41,6 +42,9 @@ object LibrariesDependency {
 
     const val LIFECYCLE_LIVEDATA_KTX =
         "androidx.lifecycle:lifecycle-livedata-ktx:${LibraryVersion.LIFECYCLE_LIVEDATA_KTX}"
+
+    const val CIRCLE_PROGRESSBAR =
+        "com.mikhaellopez:circularprogressbar:${LibraryVersion.CIRCLE_PROGRESSBAR}"
 
 }
 

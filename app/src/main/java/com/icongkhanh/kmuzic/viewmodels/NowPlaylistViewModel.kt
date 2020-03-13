@@ -3,7 +3,7 @@ package com.icongkhanh.kmuzic.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.icongkhanh.kmuzic.domain.models.Muzic
+import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
 import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicPlayingChangedListener
@@ -14,11 +14,11 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(), OnMuzicP
 
     private var getProgressMuzicTimer = Timer()
 
-    private val _listMusic = MutableLiveData<List<Muzic>>()
-    val listMusic: LiveData<List<Muzic>> = _listMusic
+    private val _listMusic = MutableLiveData<List<Music>>()
+    val listMusic: LiveData<List<Music>> = _listMusic
 
-    private val _currentPlayingMuzic = MutableLiveData<Muzic>()
-    val currentPlayingMuzic: LiveData<Muzic> = _currentPlayingMuzic
+    private val _currentPlayingMuzic = MutableLiveData<Music>()
+    val currentPlayingMusic: LiveData<Music> = _currentPlayingMuzic
 
     private val _stateMuzic = MutableLiveData<MuzicState>()
     val stateMuzic: LiveData<MuzicState> = _stateMuzic

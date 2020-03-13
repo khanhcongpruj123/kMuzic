@@ -9,8 +9,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.icongkhanh.kmuzic.R
-import com.icongkhanh.kmuzic.domain.models.Muzic
+import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.utils.BitmapUtils
+import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,19 +19,22 @@ import kotlinx.coroutines.withContext
 
 class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAdapter.LocalViewHoder>() {
 
-    private val listMusic = mutableListOf<Muzic>()
-    private lateinit var onPressItem: (muzic: Muzic) -> Unit
+    private val listMusic = mutableListOf<Music>()
+    private lateinit var onPressItem: (music: Music) -> Unit
+    private var indexPlaying = -1
 
     class LocalViewHoder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         var thumnail: ImageView
         var musicName: TextView
         var authorName: TextView
+        var progressBar: CircularProgressBar
 
         init {
             thumnail = itemView.findViewById(R.id.item_music_thumnail)
             musicName = itemView.findViewById(R.id.music_name)
             authorName = itemView.findViewById(R.id.author_name)
+            progressBar = itemView.findViewById(R.id.progress_bar)
         }
     }
 
@@ -43,7 +47,7 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
         return listMusic.size
     }
 
-    fun updateListMuisc(list: List<Muzic>) {
+    fun updateListMuisc(list: List<Music>) {
         listMusic.clear()
         listMusic.addAll(list)
         notifyDataSetChanged()
@@ -54,6 +58,9 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
 
         holder.authorName.text = item.authorName
         holder.musicName.text = item.name
+
+        if (position == indexPlaying) holder.progressBar.visibility = View.VISIBLE
+        else holder.progressBar.visibility = View.INVISIBLE
 
         /**
          * async get bitmap from mp3 file
@@ -73,8 +80,12 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
         }
     }
 
-    fun setOnPressItem(callback: (muzic: Muzic) -> Unit) {
+    fun setOnPressItem(callback: (music: Music) -> Unit) {
         onPressItem = callback
+    }
+
+    fun updatePlayingMusic(music: Music): Int {
+        return listMusic.indexOf(music)
     }
 
 }

@@ -107,7 +107,7 @@ class NowPlaylistFragment : Fragment() {
             seekBar.progress = (it * 100).toInt()
         })
 
-        viewmodel.currentPlayingMuzic.observe(viewLifecycleOwner, Observer { currMusic ->
+        viewmodel.currentPlayingMusic.observe(viewLifecycleOwner, Observer { currMusic ->
             Log.d(TAG, "On Oserver Current Muzic: ${currMusic.name}")
             currMusic?.let { muzic ->
                 tvAuthorName.text = muzic.authorName

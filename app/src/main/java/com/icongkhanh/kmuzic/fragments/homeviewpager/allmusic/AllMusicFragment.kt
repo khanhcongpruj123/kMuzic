@@ -135,7 +135,8 @@ class AllMusicFragment : Fragment() {
         else loadingView.visibility = View.INVISIBLE
 
         //update list music
-        listMusicAdapter.updateListMuisc(state.musics)
+        listMusicAdapter.updateListMuisc(state.music)
+
     }
 
     private fun checkReadPermission(): Boolean {

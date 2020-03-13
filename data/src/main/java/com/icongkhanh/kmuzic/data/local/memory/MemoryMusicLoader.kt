@@ -5,7 +5,7 @@ import android.media.MediaMetadataRetriever
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import com.icongkhanh.kmuzic.domain.models.Muzic
+import com.icongkhanh.kmuzic.domain.models.Music
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.File
@@ -14,7 +14,7 @@ import java.util.*
 class MemoryMusicLoader(val context: Context) {
 
 
-    suspend fun execute(): Flow<List<Muzic>> = flow {
+    suspend fun execute(): Flow<List<Music>> = flow {
 
         val contentProvider = context.contentResolver
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
@@ -28,7 +28,7 @@ class MemoryMusicLoader(val context: Context) {
         )
 
         val cursor = contentProvider.query(uri, projection, selection, null, sortOrder)
-        val list = mutableListOf<Muzic>()
+        val list = mutableListOf<Music>()
         cursor?.let { c ->
             while (c.moveToNext()) {
                 val id = c.getString(0)
@@ -36,18 +36,18 @@ class MemoryMusicLoader(val context: Context) {
                 val title = c.getString(2)
                 val path = c.getString(3)
 
-                list.add(Muzic(id, title, artist, false, path))
+                list.add(Music(id, title, artist, false, path))
                 emit(list)
             }
         }
         cursor?.close()
     }
 
-    suspend fun getAllMusic() = flow<List<Muzic>> {
+    suspend fun getAllMusic() = flow<List<Music>> {
 
         Log.d(TAG, "Get All Music!")
         val listMuzicPath = mutableListOf<String>()
-        val listMuzic = mutableListOf<Muzic>()
+        val listMuzic = mutableListOf<Music>()
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             Log.d(TAG, "Scan Music After Q")
@@ -58,9 +58,8 @@ class MemoryMusicLoader(val context: Context) {
             scanMusicBeforeQ(rootDir, listMuzicPath)
         }
 
+        val mr = MediaMetadataRetriever()
         listMuzicPath.forEach {
-
-            val mr = MediaMetadataRetriever()
             mr.setDataSource(it)
 
             val name = mr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
@@ -68,7 +67,7 @@ class MemoryMusicLoader(val context: Context) {
 
 
             listMuzic.add(
-                Muzic(
+                Music(
                     UUID.randomUUID().toString(),
                     name,
                     author,
@@ -77,18 +76,15 @@ class MemoryMusicLoader(val context: Context) {
                 )
             )
 
-            mr.release()
-
             emit(listMuzic)
         }
+        mr.release()
 
     }
 
     fun scanMusicAfterQ(list: MutableList<String>) {
 
         val cr = context.contentResolver
-//        val uri =
-//            Uri.parse("content://com.android.providers.downloads.documents/document/downloads")
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0"
         val projection = arrayOf(

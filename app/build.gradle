@@ -71,6 +71,8 @@ dependencies {
     implementation LibrariesDependency.GLIDE
     annotationProcessor AnnotationDependency.GLIDE_COMPILER
 
-    debugImplementation DebugDependency.LEAK_CANARY
+    implementation LibrariesDependency.CIRCLE_PROGRESSBAR
+
+//    debugImplementation DebugDependency.LEAK_CANARY
 
 }
