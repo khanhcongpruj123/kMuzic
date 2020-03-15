@@ -1,8 +1,12 @@
-package com.icongkhanh.kmuzic.fragments.homeviewpager.allmusic
+package com.icongkhanh.kmuzic.fragments.home.homeviewpager.allmusic
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.domain.usecases.LoadAllMusicUseCase
+import com.icongkhanh.kmuzic.playermuzicservice.Muzic
+import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
+import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicPlayingChangedListener
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -10,8 +14,10 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 class AllMusicFragmentViewModel(
-    val loadAllMusic: LoadAllMusicUseCase
-) : ViewModel() {
+    private val loadAllMusic: LoadAllMusicUseCase,
+    private val player: MuzicPlayer,
+    private val isGrantedReadPermission: Boolean
+) : ViewModel(), OnMuzicPlayingChangedListener {
 
     private val initialState = AllMusicContract.ViewState.initial()
 
@@ -21,7 +27,37 @@ class AllMusicFragmentViewModel(
 
     val viewState: LiveData<AllMusicContract.ViewState> = _viewState.distinctUntilChanged()
 
+    private val _playingMusic = MutableLiveData<Music>()
+    val playingMusic: LiveData<Music> = _playingMusic.distinctUntilChanged()
+
     init {
+
+        player.addOnMuzicPlayingChangedListener(this)
+
+        player.getCurrentMuzic()?.let {
+            _playingMusic.value = it.toDomainModel()
+        }
+
+        _loadAllMusic()
+    }
+
+    companion object {
+        val TAG = "MusicViewModel"
+    }
+
+    override fun onChanged(muzic: Muzic) {
+        _playingMusic.value = muzic.toDomainModel()
+    }
+
+    fun onStart() {
+
+    }
+
+    fun onStop() {
+//        player.unsubscribe(this)
+    }
+
+    fun _loadAllMusic() {
         viewModelScope.launch {
             loadAllMusic(true).onStart {
                 Log.d(TAG, "On Start Load Music")
@@ -42,10 +78,6 @@ class AllMusicFragmentViewModel(
                 _viewState.value = _viewState.value!!.copy(isLoading = false)
             }.launchIn(viewModelScope)
         }
-    }
-
-    companion object {
-        val TAG = "MusicViewModel"
     }
 
 }

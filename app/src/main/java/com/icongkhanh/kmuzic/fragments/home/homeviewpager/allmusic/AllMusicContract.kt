@@ -1,4 +1,4 @@
-package com.icongkhanh.kmuzic.fragments.homeviewpager.allmusic
+package com.icongkhanh.kmuzic.fragments.home.homeviewpager.allmusic
 
 import com.icongkhanh.kmuzic.domain.models.Music
 

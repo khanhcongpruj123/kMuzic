@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingHorizontal="20dp"
-    tools:context=".fragments.nowplaylistviewpager.PlaylistFragment">
+    tools:context=".fragments.nowplaylist.nowplaylistviewpager.PlaylistFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <androidx.constraintlayout.widget.ConstraintLayout

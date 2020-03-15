@@ -1,4 +1,4 @@
-package com.icongkhanh.kmuzic.fragments
+package com.icongkhanh.kmuzic.fragments.nowplaylist
 
 
 import android.os.Bundle
@@ -13,10 +13,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.transition.MaterialContainerTransform
 import com.icongkhanh.kmuzic.R
-import com.icongkhanh.kmuzic.fragments.nowplaylistviewpager.PlaylistFragment
-import com.icongkhanh.kmuzic.fragments.nowplaylistviewpager.ThumbnailFragment
+import com.icongkhanh.kmuzic.fragments.nowplaylist.nowplaylistviewpager.PlaylistFragment
+import com.icongkhanh.kmuzic.fragments.nowplaylist.nowplaylistviewpager.ThumbnailFragment
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
-import com.icongkhanh.kmuzic.viewmodels.NowPlaylistViewModel
 import com.icongkhanh.scaledviewpager.ScaledFragmentPagerAdapter
 import com.icongkhanh.scaledviewpager.ScaledTransformer
 import org.koin.android.viewmodel.ext.android.viewModel

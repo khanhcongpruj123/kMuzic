@@ -1,4 +1,4 @@
-package com.icongkhanh.kmuzic.fragments.nowplaylistviewpager
+package com.icongkhanh.kmuzic.fragments.nowplaylist.nowplaylistviewpager
 
 import android.os.Bundle
 import android.view.LayoutInflater

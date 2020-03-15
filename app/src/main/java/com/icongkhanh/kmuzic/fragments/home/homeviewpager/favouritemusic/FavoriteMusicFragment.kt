@@ -1,12 +1,11 @@
-package com.icongkhanh.kmuzic.fragments.homeviewpager
+package com.icongkhanh.kmuzic.fragments.home.homeviewpager.favouritemusic
 
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import androidx.fragment.app.Fragment
 import com.icongkhanh.kmuzic.R
 
 
@@ -44,7 +43,8 @@ class FavoriteMusicFragment : Fragment() {
 
         @JvmStatic
         fun getInstance(): FavoriteMusicFragment? {
-            if (instance == null) instance = FavoriteMusicFragment()
+            if (instance == null) instance =
+                FavoriteMusicFragment()
             return instance
         }
     }

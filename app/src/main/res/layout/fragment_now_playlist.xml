@@ -6,7 +6,7 @@
     android:background="@color/black"
     android:transitionName="shared_element_container"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.NowPlaylistFragment">
+    tools:context=".fragments.nowplaylist.NowPlaylistFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

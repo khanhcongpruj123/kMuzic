@@ -1,6 +1,7 @@
 package com.icongkhanh.kmuzic.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
     private val listMusic = mutableListOf<Music>()
     private lateinit var onPressItem: (music: Music) -> Unit
     private var indexPlaying = -1
+    private var oldIndex = indexPlaying
 
     class LocalViewHoder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -29,12 +31,14 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
         var musicName: TextView
         var authorName: TextView
         var progressBar: CircularProgressBar
+        var bgProgressBar: View
 
         init {
             thumnail = itemView.findViewById(R.id.item_music_thumnail)
             musicName = itemView.findViewById(R.id.music_name)
             authorName = itemView.findViewById(R.id.author_name)
             progressBar = itemView.findViewById(R.id.progress_bar)
+            bgProgressBar = itemView.findViewById(R.id.bg_progress_bar)
         }
     }
 
@@ -59,8 +63,9 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
         holder.authorName.text = item.authorName
         holder.musicName.text = item.name
 
-        if (position == indexPlaying) holder.progressBar.visibility = View.VISIBLE
-        else holder.progressBar.visibility = View.INVISIBLE
+        Log.d(TAG, "Index playing: ${position}/${indexPlaying}")
+        if (position == indexPlaying) holder.bgProgressBar.visibility = View.VISIBLE
+        else holder.bgProgressBar.visibility = View.INVISIBLE
 
         /**
          * async get bitmap from mp3 file
@@ -84,8 +89,19 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
         onPressItem = callback
     }
 
-    fun updatePlayingMusic(music: Music): Int {
-        return listMusic.indexOf(music)
+    fun updatePlayingMusic(music: Music) {
+        oldIndex = indexPlaying
+        indexPlaying = listMusic.indexOfFirst {
+            val isTrue = it.id == music.id
+            isTrue
+        }
+        Log.d(TAG, "Update index: ${indexPlaying}")
+        notifyItemChanged(indexPlaying)
+        notifyItemChanged(oldIndex)
+    }
+
+    companion object {
+        val TAG = "ListMusicAdapter"
     }
 
 }

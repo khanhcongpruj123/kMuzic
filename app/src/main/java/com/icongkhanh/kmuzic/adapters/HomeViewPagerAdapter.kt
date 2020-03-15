@@ -3,8 +3,8 @@ package com.icongkhanh.kmuzic.adapters
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.icongkhanh.kmuzic.fragments.homeviewpager.FavoriteMusicFragment
-import com.icongkhanh.kmuzic.fragments.homeviewpager.allmusic.AllMusicFragment
+import com.icongkhanh.kmuzic.fragments.home.homeviewpager.allmusic.AllMusicFragment
+import com.icongkhanh.kmuzic.fragments.home.homeviewpager.favouritemusic.FavoriteMusicFragment
 
 class HomeViewPagerAdapter(val fm: FragmentManager)
     : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {

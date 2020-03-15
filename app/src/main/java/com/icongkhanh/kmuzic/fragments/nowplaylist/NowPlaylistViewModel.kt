@@ -1,4 +1,4 @@
-package com.icongkhanh.kmuzic.viewmodels
+package com.icongkhanh.kmuzic.fragments.nowplaylist
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
