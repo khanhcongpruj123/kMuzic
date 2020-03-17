@@ -58,7 +58,6 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
 
     override fun onCreate() {
         super.onCreate()
-//        Log.d(TAG, "On Create")
 
         timer.schedule(progressTask, 0, 500)
     }
@@ -154,6 +153,7 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
 
         stopForeground(true)
         handleMuzicStateListener(MuzicState.IDLE)
+//        stopSelf()
     }
 
     fun next() {
@@ -322,7 +322,6 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        stop()
     }
 
     fun getProgress(): Float {
@@ -330,6 +329,8 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
     }
 
     override fun onChanged(state: MuzicState) {
+        // when service stop, state is idle, notification will be removed, if startForeground, notification will be created, it is fail logic
+        if (state == MuzicState.IDLE) return
         startForeground(1, buildNotification(state))
     }
 

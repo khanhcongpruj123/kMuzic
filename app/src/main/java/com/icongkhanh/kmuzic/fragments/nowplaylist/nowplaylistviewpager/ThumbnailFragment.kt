@@ -4,13 +4,28 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.icongkhanh.kmuzic.R
+import com.icongkhanh.kmuzic.fragments.nowplaylist.NowPlaylistViewModel
+import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
+import com.icongkhanh.kmuzic.utils.BitmapUtils
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 /**
  * A simple [Fragment] subclass.
  */
-class ThumbnailFragment : Fragment() {
+class ThumbnailFragment() : Fragment() {
+
+    val player by inject<MuzicPlayer>()
+
+    val nowplaylistVM by sharedViewModel<NowPlaylistViewModel>()
+    lateinit var thumbnail: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -18,6 +33,23 @@ class ThumbnailFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_thumbnail, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        thumbnail = view.findViewById(R.id.thumbnail)
+
+        nowplaylistVM.currentPlayingMusic.observe(viewLifecycleOwner, Observer {
+            lifecycleScope.launch {
+                val img = BitmapUtils.getBitmapFromMusicFile(it.path)
+                img?.let { bm ->
+                    Glide.with(this@ThumbnailFragment)
+                        .load(bm)
+                        .into(thumbnail)
+                }
+            }
+        })
     }
 
 }

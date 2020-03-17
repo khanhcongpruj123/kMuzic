@@ -27,7 +27,7 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
     private var progress = 0f
     private var currentMusicPlayingItem: LocalViewHoder? = null
 
-    class LocalViewHoder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class LocalViewHoder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         var thumnail: ImageView
         var musicName: TextView
@@ -41,6 +41,35 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
             authorName = itemView.findViewById(R.id.author_name)
             progressBar = itemView.findViewById(R.id.progress_bar)
             bgProgressBar = itemView.findViewById(R.id.bg_progress_bar)
+        }
+
+        fun bindDataWithViewHolder(music: Music, position: Int) {
+            this.authorName.text = music.authorName
+            this.musicName.text = music.name
+//            this.progressBar.progress = progress * 100
+
+            Log.d(TAG, "Index playing: ${position}/${indexPlaying}")
+            if (position == indexPlaying) {
+                this.bgProgressBar.visibility = View.VISIBLE
+                currentMusicPlayingItem = this
+            } else this.bgProgressBar.visibility = View.INVISIBLE
+
+            /**
+             * async get bitmap from mp3 file
+             * */
+            CoroutineScope(Dispatchers.Default).launch {
+                Log.d(TAG, "${music.path}")
+                val imgBm = BitmapUtils.getBitmapFromMusicFile(music.path)
+                withContext(Dispatchers.Main) {
+                    Glide.with(context)
+                        .load(imgBm)
+                        .into(this@LocalViewHoder.thumnail)
+                }
+            }
+
+            this.itemView.setOnClickListener {
+                onPressItem(music)
+            }
         }
     }
 
@@ -61,35 +90,7 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
 
     override fun onBindViewHolder(holder: LocalViewHoder, position: Int) {
         val item = listMusic[position]
-
-        holder.authorName.text = item.authorName
-        holder.musicName.text = item.name
-        holder.progressBar.progress = progress * 100
-
-        Log.d(TAG, "Index playing: ${position}/${indexPlaying}")
-        if (position == indexPlaying) {
-            holder.bgProgressBar.visibility = View.VISIBLE
-            currentMusicPlayingItem = holder
-        }
-        else holder.bgProgressBar.visibility = View.INVISIBLE
-
-        if (holder.thumnail.drawable == null) {
-            /**
-             * async get bitmap from mp3 file
-             * */
-            CoroutineScope(Dispatchers.Default).launch {
-                val imgBm = BitmapUtils.getBitmapFromMusicFile(item.path)
-                withContext(Dispatchers.Main) {
-                    Glide.with(context)
-                        .load(imgBm)
-                        .into(holder.thumnail)
-                }
-            }
-        }
-
-        holder.itemView.setOnClickListener {
-            onPressItem(item)
-        }
+        holder.bindDataWithViewHolder(item, position)
     }
 
     fun setOnPressItem(callback: (music: Music) -> Unit) {
@@ -105,11 +106,11 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
         Log.d(TAG, "Update index: ${indexPlaying}")
         notifyItemChanged(indexPlaying)
         notifyItemChanged(oldIndex)
+//        notifyDataSetChanged()
     }
 
     fun updateProgress(progress: Float? = 0f) {
         this.progress = progress ?: 0f
-//        Log.d(TAG, "${currentMusicPlayingItem?.progressBar}")
         currentMusicPlayingItem?.progressBar?.progress = this.progress * 100
     }
 

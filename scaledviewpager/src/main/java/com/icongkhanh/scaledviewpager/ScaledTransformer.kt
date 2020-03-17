@@ -55,7 +55,7 @@ class ScaledTransformer(val pager: ViewPager, val adapter: ScaledFragmentPagerAd
         // and the views weren't created yet
         if (currentFragmentView != null) {
 //            currentFragmentView.scaleX = 0.8f
-            currentFragmentView.scaleY = 0.9f + 0.1f * (1 - realOffset)
+            currentFragmentView.scaleY = 0.8f + 0.2f * (1 - realOffset)
         }
 
         val nextFragmentView = adapter.getFragmentViewAtPosition(nextPosition)
@@ -66,7 +66,7 @@ class ScaledTransformer(val pager: ViewPager, val adapter: ScaledFragmentPagerAd
         // was already destroyed or a fragment might not have been created yet
         if (nextFragmentView != null) {
 //            nextFragmentView.scaleX = 0.8f
-            nextFragmentView.scaleY = 0.9f + 0.1f * realOffset
+            nextFragmentView.scaleY = 0.8f + 0.2f * realOffset
         }
 
         mLastOffset = positionOffset

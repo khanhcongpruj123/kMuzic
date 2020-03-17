@@ -29,6 +29,11 @@ class ScaledFragmentPagerAdapter(val fm: FragmentManager) :
         notifyDataSetChanged()
     }
 
+    fun replaceFragment(position: Int, fragment: Fragment) {
+        fragments[position] = fragment
+        notifyDataSetChanged()
+    }
+
     fun getFragmentViewAtPosition(position: Int): View? {
         return fragments[position].view
     }

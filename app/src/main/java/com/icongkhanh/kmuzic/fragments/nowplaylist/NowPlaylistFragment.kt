@@ -83,12 +83,23 @@ class NowPlaylistFragment : Fragment() {
         scaledTransformer = ScaledTransformer(pager, scaledPagerAdapter)
 
         // setup adapter
-        scaledPagerAdapter.addFragment(PlaylistFragment())
         scaledPagerAdapter.addFragment(ThumbnailFragment())
+        scaledPagerAdapter.addFragment(PlaylistFragment())
         pager.adapter = scaledPagerAdapter
         pager.addOnPageChangeListener(scaledTransformer)
         pager.setPageTransformer(false, scaledTransformer)
         pager.offscreenPageLimit = 3
+
+        return view
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_now_playlist, menu)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         // subcribe Ui
         viewmodel.stateMuzic.observe(viewLifecycleOwner, Observer {
@@ -113,12 +124,6 @@ class NowPlaylistFragment : Fragment() {
             }
         })
 
-        return view
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_now_playlist, menu)
     }
 
     override fun onStop() {
