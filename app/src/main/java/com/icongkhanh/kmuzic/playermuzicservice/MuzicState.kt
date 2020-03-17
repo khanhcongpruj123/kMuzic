@@ -8,6 +8,10 @@ interface OnMuzicPlayingChangedListener {
     fun onChanged(muzic: Muzic)
 }
 
+interface OnProgressChangedListener {
+    fun onChanged(progress: Float)
+}
+
 enum class MuzicState {
     PLAY,
     PAUSE,

@@ -102,7 +102,6 @@ class NowPlaylistFragment : Fragment() {
             }
         })
         viewmodel.progressMusic.observe(viewLifecycleOwner, Observer {
-            //            Log.d(TAG, "Progess: ${it}")
             seekBar.progress = (it * 100).toInt()
         })
 

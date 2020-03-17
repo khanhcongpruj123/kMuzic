@@ -127,6 +127,10 @@ class AllMusicFragment : Fragment() {
             Log.d(TAG, "Update Playing Music!")
             listMusicAdapter.updatePlayingMusic(it)
         })
+
+        viewModel.progressMusic.observe(viewLifecycleOwner, Observer {
+            listMusicAdapter.updateProgress(it)
+        })
     }
 
     private fun renderUi(state: AllMusicContract.ViewState) {

@@ -7,6 +7,8 @@ import com.icongkhanh.kmuzic.domain.usecases.LoadAllMusicUseCase
 import com.icongkhanh.kmuzic.playermuzicservice.Muzic
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
 import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicPlayingChangedListener
+import com.icongkhanh.kmuzic.playermuzicservice.OnProgressChangedListener
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -17,7 +19,7 @@ class AllMusicFragmentViewModel(
     private val loadAllMusic: LoadAllMusicUseCase,
     private val player: MuzicPlayer,
     private val isGrantedReadPermission: Boolean
-) : ViewModel(), OnMuzicPlayingChangedListener {
+) : ViewModel(), OnMuzicPlayingChangedListener, OnProgressChangedListener {
 
     private val initialState = AllMusicContract.ViewState.initial()
 
@@ -30,15 +32,23 @@ class AllMusicFragmentViewModel(
     private val _playingMusic = MutableLiveData<Music>()
     val playingMusic: LiveData<Music> = _playingMusic.distinctUntilChanged()
 
+    private val _progressMusic = MutableLiveData<Float>()
+    val progressMusic: LiveData<Float> = _progressMusic.distinctUntilChanged()
+
     init {
 
         player.addOnMuzicPlayingChangedListener(this)
+        player.addOnProgressChangedListener(this)
 
         player.getCurrentMuzic()?.let {
             _playingMusic.value = it.toDomainModel()
         }
 
-        _loadAllMusic()
+        player.getProgress().let {
+            _progressMusic.value = it
+        }
+
+        if (isGrantedReadPermission) _loadAllMusic()
     }
 
     companion object {
@@ -77,6 +87,12 @@ class AllMusicFragmentViewModel(
                 Log.d(TAG, "On Completed: ${_viewState.value?.music?.size}")
                 _viewState.value = _viewState.value!!.copy(isLoading = false)
             }.launchIn(viewModelScope)
+        }
+    }
+
+    override fun onChanged(progress: Float) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _progressMusic.value = progress
         }
     }
 

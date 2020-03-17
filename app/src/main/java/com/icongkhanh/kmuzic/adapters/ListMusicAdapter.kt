@@ -24,6 +24,8 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
     private lateinit var onPressItem: (music: Music) -> Unit
     private var indexPlaying = -1
     private var oldIndex = indexPlaying
+    private var progress = 0f
+    private var currentMusicPlayingItem: LocalViewHoder? = null
 
     class LocalViewHoder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -62,21 +64,26 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
 
         holder.authorName.text = item.authorName
         holder.musicName.text = item.name
+        holder.progressBar.progress = progress * 100
 
         Log.d(TAG, "Index playing: ${position}/${indexPlaying}")
-        if (position == indexPlaying) holder.bgProgressBar.visibility = View.VISIBLE
+        if (position == indexPlaying) {
+            holder.bgProgressBar.visibility = View.VISIBLE
+            currentMusicPlayingItem = holder
+        }
         else holder.bgProgressBar.visibility = View.INVISIBLE
 
-        /**
-         * async get bitmap from mp3 file
-         * */
-        CoroutineScope(Dispatchers.Default).launch {
-            val imgBm = BitmapUtils.getBitmapFromMusicFile(item.path)
-            withContext(Dispatchers.Main) {
-                Glide.with(context)
-                    .asBitmap()
-                    .load(imgBm)
-                    .into(holder.thumnail)
+        if (holder.thumnail.drawable == null) {
+            /**
+             * async get bitmap from mp3 file
+             * */
+            CoroutineScope(Dispatchers.Default).launch {
+                val imgBm = BitmapUtils.getBitmapFromMusicFile(item.path)
+                withContext(Dispatchers.Main) {
+                    Glide.with(context)
+                        .load(imgBm)
+                        .into(holder.thumnail)
+                }
             }
         }
 
@@ -98,6 +105,12 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
         Log.d(TAG, "Update index: ${indexPlaying}")
         notifyItemChanged(indexPlaying)
         notifyItemChanged(oldIndex)
+    }
+
+    fun updateProgress(progress: Float? = 0f) {
+        this.progress = progress ?: 0f
+//        Log.d(TAG, "${currentMusicPlayingItem?.progressBar}")
+        currentMusicPlayingItem?.progressBar?.progress = this.progress * 100
     }
 
     companion object {

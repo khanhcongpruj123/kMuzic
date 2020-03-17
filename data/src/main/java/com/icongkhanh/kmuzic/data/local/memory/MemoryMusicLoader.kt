@@ -75,9 +75,8 @@ class MemoryMusicLoader(val context: Context) {
                     it
                 )
             )
-
-            emit(listMuzic)
         }
+        emit(listMuzic)
         mr.release()
 
     }

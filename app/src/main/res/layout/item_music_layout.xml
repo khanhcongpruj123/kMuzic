@@ -50,7 +50,7 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_margin="10dp"
-                    app:cpb_progress="10"
+                    app:cpb_progress="0"
                     app:cpb_progress_max="100"
                     app:cpb_progressbar_color="@android:color/holo_green_dark"
                     app:cpb_progressbar_width="5dp"
