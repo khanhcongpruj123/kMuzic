@@ -103,7 +103,7 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
             val isTrue = it.id == music.id
             isTrue
         }
-        Log.d(TAG, "Update index: ${indexPlaying}")
+        Log.d(TAG, "Update index: ${indexPlaying} ${music.id}")
         notifyItemChanged(indexPlaying)
         notifyItemChanged(oldIndex)
 //        notifyDataSetChanged()

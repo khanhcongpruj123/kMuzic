@@ -25,7 +25,7 @@ class MuzicPlayer(val context: Context) {
         }
 
     }
-    var muzicState = MuzicState.IDLE
+
     private val stateMuzicListener = mutableListOf<OnMuzicStateChangedListener>()
     private val muzicPlayingListener = mutableListOf<OnMuzicPlayingChangedListener>()
     private val progressChangedListener = mutableListOf<OnProgressChangedListener>()
@@ -122,5 +122,9 @@ class MuzicPlayer(val context: Context) {
         if (any is OnMuzicPlayingChangedListener) muzicPlayingListener.remove(any)
         if (any is OnMuzicStateChangedListener) stateMuzicListener.remove(any)
         if (any is OnProgressChangedListener) progressChangedListener.remove(any)
+    }
+
+    fun getMusicState(): MuzicState? {
+        return muzicService?.muzicState
     }
 }

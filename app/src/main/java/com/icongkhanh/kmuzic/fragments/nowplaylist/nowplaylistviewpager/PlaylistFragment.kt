@@ -1,6 +1,7 @@
 package com.icongkhanh.kmuzic.fragments.nowplaylist.nowplaylistviewpager
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,16 +47,21 @@ class PlaylistFragment() : Fragment() {
         }
         listMusic.adapter = adapter
 
-        vm.currentPlayingMusic.observe(viewLifecycleOwner, Observer {
-            adapter.updatePlayingMusic(it)
-        })
-
         vm.listMusic.observe(viewLifecycleOwner, Observer {
             adapter.updateListMuisc(it)
+        })
+
+        vm.currentPlayingMusic.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "Music: ${it}")
+            adapter.updatePlayingMusic(it)
         })
 
         vm.progressMusic.observe(viewLifecycleOwner, Observer {
             adapter.updateProgress(it)
         })
+    }
+
+    companion object {
+        val TAG = this::class.java.simpleName
     }
 }

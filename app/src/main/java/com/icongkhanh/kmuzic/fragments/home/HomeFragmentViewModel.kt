@@ -23,7 +23,7 @@ class HomeFragmentViewModel(
         player.addOnMuzicPlayingChangedListener(this)
         player.addOnStateChangedListener(this)
 
-        _musicState.value = player.muzicState
+        _musicState.value = player.getMusicState()
         player.getCurrentMuzic()?.let {
             _playingMusic.value = it.toDomainModel()
         }

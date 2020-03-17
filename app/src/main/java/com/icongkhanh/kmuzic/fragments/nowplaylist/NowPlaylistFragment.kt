@@ -38,6 +38,7 @@ class NowPlaylistFragment : Fragment() {
     lateinit var btnBack: ImageButton
     lateinit var scaledTransformer: ScaledTransformer
     lateinit var scaledPagerAdapter: ScaledFragmentPagerAdapter
+    lateinit var btnLike: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +62,7 @@ class NowPlaylistFragment : Fragment() {
         tvMusicName = view.findViewById(R.id.music_name)
         pager = view.findViewById(R.id.pager)
         btnBack = view.findViewById(R.id.btn_back)
+        btnLike = view.findViewById(R.id.btn_like)
 
         btnPlayOrPause.setOnClickListener {
             viewmodel.onPressPlayOrPause()
@@ -122,6 +124,15 @@ class NowPlaylistFragment : Fragment() {
                 tvAuthorName.text = muzic.authorName
                 tvMusicName.text = muzic.name
             }
+
+            var resId = R.drawable.ic_favorite_black_36dp
+            if (currMusic.isFavorite) {
+                resId = R.drawable.ic_favorite_black_36dp
+            } else {
+                resId = R.drawable.ic_favorite_border_black_36dp
+            }
+
+            btnLike.setImageResource(resId)
         })
 
     }

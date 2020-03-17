@@ -91,6 +91,16 @@
         android:layout_height="wrap_content">
 
         <ImageButton
+            android:id="@+id/btn_like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="?android:selectableItemBackground"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_favorite_border_black_36dp"
+            android:tint="@android:color/white" />
+
+        <ImageButton
             android:tint="@android:color/white"
             android:id="@+id/btn_previous"
             android:layout_margin="10dp"

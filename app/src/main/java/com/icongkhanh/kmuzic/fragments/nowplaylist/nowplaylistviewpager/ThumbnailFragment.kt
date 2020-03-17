@@ -11,18 +11,14 @@ import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.icongkhanh.kmuzic.R
 import com.icongkhanh.kmuzic.fragments.nowplaylist.NowPlaylistViewModel
-import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
 import com.icongkhanh.kmuzic.utils.BitmapUtils
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 /**
  * A simple [Fragment] subclass.
  */
 class ThumbnailFragment() : Fragment() {
-
-    val player by inject<MuzicPlayer>()
 
     val nowplaylistVM by sharedViewModel<NowPlaylistViewModel>()
     lateinit var thumbnail: ImageView
@@ -50,6 +46,10 @@ class ThumbnailFragment() : Fragment() {
                 }
             }
         })
+    }
+
+    companion object {
+        val TAG = this::class.java.simpleName
     }
 
 }

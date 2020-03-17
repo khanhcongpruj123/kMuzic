@@ -14,13 +14,13 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(),
     val listMusic: LiveData<List<Music>> = _listMusic.distinctUntilChanged()
 
     private val _currentPlayingMuzic = MutableLiveData<Music>()
-    val currentPlayingMusic: LiveData<Music> = _currentPlayingMuzic
+    val currentPlayingMusic: LiveData<Music> = _currentPlayingMuzic.distinctUntilChanged()
 
     private val _stateMuzic = MutableLiveData<MuzicState>()
     val stateMuzic: LiveData<MuzicState> = _stateMuzic.distinctUntilChanged()
 
     private val _progressMusic = MutableLiveData<Float>(0f)
-    val progressMusic: LiveData<Float> = _progressMusic
+    val progressMusic: LiveData<Float> = _progressMusic.distinctUntilChanged()
 
 
     init {
@@ -30,7 +30,7 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(),
             it.addOnProgressChangedListener(this)
         }
 
-        muzicPlayer.muzicState.let {
+        muzicPlayer.getMusicState().let {
             _stateMuzic.value = it
         }
 
