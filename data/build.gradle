@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -39,6 +41,16 @@ dependencies {
 
     // Woker
     implementation LibrariesDependency.WORKER_KTX
+
+    //Room
+    implementation LibrariesDependency.ROOM_RUNTIME
+    implementation LibrariesDependency.ROOM_KTX
+    annotationProcessor AnnotationDependency.ROOM_COMPILER
+    kapt KAPT.ROOM_KAPT
+
+    //Koin
+    implementation LibrariesDependency.KOIN_ANDROID
+    implementation LibrariesDependency.KOIN_ANDROID_EXT
 
     implementation project(":domain")
 }

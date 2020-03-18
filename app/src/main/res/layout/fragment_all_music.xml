@@ -14,6 +14,9 @@
         android:id="@+id/list_music"
         android:layout_width="match_parent"
         android:padding="10dp"
+        android:clipToPadding="false"
+        android:elevation="1dp"
+        android:scrollbarStyle="outsideOverlay"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <RelativeLayout

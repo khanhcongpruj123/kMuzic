@@ -72,7 +72,7 @@ class AllMusicFragmentViewModel(
 
     fun _loadAllMusic() {
         viewModelScope.launch {
-            loadAllMusic(true).onStart {
+            loadAllMusic(false).onStart {
                 Log.d(TAG, "On Start Load Music")
                 _viewState.value = AllMusicContract.ViewState(
                     music = emptyList(),

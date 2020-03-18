@@ -84,6 +84,10 @@ class NowPlaylistFragment : Fragment() {
             findNavController().navigateUp()
         }
 
+        btnLike.setOnClickListener {
+            viewmodel.addMusicToFavorite()
+        }
+
         // init adapter pager and transformer
         scaledPagerAdapter = ScaledFragmentPagerAdapter(childFragmentManager)
         scaledTransformer = ScaledTransformer(pager, scaledPagerAdapter)
@@ -129,11 +133,10 @@ class NowPlaylistFragment : Fragment() {
                 tvMusicName.text = muzic.name
             }
 
-            var resId = R.drawable.ic_favorite_black_36dp
-            if (currMusic.isFavorite) {
-                resId = R.drawable.ic_favorite_black_36dp
+            val resId = if (currMusic.isFavorite) {
+                R.drawable.ic_favorite_black_36dp
             } else {
-                resId = R.drawable.ic_favorite_border_black_36dp
+                R.drawable.ic_favorite_border_black_36dp
             }
 
             btnLike.setImageResource(resId)

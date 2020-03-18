@@ -4,9 +4,9 @@ import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.domain.repositories.MuzicRepository
 import kotlinx.coroutines.flow.Flow
 
-class LoadMusicInPlaylist(val repository: MuzicRepository) {
+class GetMusicByIdUsecase(val repository: MuzicRepository) {
 
-    suspend operator fun invoke(playlistId: String): Flow<List<Music>> {
-        return repository.loadMusicInPlaylist(playlistId)
+    suspend operator fun invoke(id: String): Flow<Music> {
+        return repository.getMusicById(id)
     }
 }

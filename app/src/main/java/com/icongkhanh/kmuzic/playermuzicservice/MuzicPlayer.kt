@@ -58,6 +58,7 @@ class MuzicPlayer(val context: Context) {
         if (!isValidate()) {
             bind()
         }
+        if (getCurrentMuzic()?.id == muzic.id) return
         muzicService?.addMusicToPlaylistAndPlay(muzic)
     }
 

@@ -43,7 +43,7 @@ class MemoryMusicLoader(val context: Context) {
         cursor?.close()
     }
 
-    suspend fun getAllMusic() = flow<List<Music>> {
+    suspend fun getAllMusic(): MutableList<Music> {
 
         Log.d(TAG, "Get All Music!")
         val listMuzicPath = mutableListOf<String>()
@@ -76,9 +76,8 @@ class MemoryMusicLoader(val context: Context) {
                 )
             )
         }
-        emit(listMuzic)
         mr.release()
-
+        return listMuzic
     }
 
     fun scanMusicAfterQ(list: MutableList<String>) {

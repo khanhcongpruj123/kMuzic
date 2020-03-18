@@ -1,9 +1,12 @@
 package com.icongkhanh.kmuzic
 
 import android.app.Application
+import com.icongkhanh.kmuzic.data.di.localModule
 import com.icongkhanh.kmuzic.data.local.memory.MemoryMusicLoader
 import com.icongkhanh.kmuzic.data.repositories.MuzicRepositoryImpl
 import com.icongkhanh.kmuzic.domain.repositories.MuzicRepository
+import com.icongkhanh.kmuzic.domain.usecases.AddMusicToFavorite
+import com.icongkhanh.kmuzic.domain.usecases.GetMusicByIdUsecase
 import com.icongkhanh.kmuzic.domain.usecases.LoadAllMusicUseCase
 import com.icongkhanh.kmuzic.fragments.home.HomeFragmentViewModel
 import com.icongkhanh.kmuzic.fragments.home.homeviewpager.allmusic.AllMusicFragmentViewModel
@@ -25,9 +28,10 @@ class App : Application() {
 
             modules(
                 listOf(
+                    localModule,
                     module {
                         factory { LoadAllMusicUseCase(get()) }
-                        factory { MuzicRepositoryImpl(get()) as MuzicRepository }
+                        factory { MuzicRepositoryImpl(get(), get(), get()) as MuzicRepository }
                         factory { MemoryMusicLoader(this@App) }
                         viewModel {
 
@@ -42,8 +46,12 @@ class App : Application() {
                         single { MuzicPlayer(this@App) }
                     },
                     module {
+                        factory { GetMusicByIdUsecase(get()) }
+                        factory { AddMusicToFavorite(get()) }
                         viewModel {
                             NowPlaylistViewModel(
+                                get(),
+                                get(),
                                 get()
                             )
                         }

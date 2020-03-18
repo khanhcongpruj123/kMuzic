@@ -33,7 +33,8 @@ class NowPlaylist {
     }
 
     fun isExistedMuzic(muzic: Muzic): Boolean {
-        return listMuzic.contains(muzic)
+        val index = listMuzic.indexOfFirst { it.id == muzic.id }
+        return index != -1
     }
 
     /**
@@ -48,14 +49,6 @@ class NowPlaylist {
         }
     }
 
-    fun addMusicAndPlay(muzic: Muzic) {
-        if (isExistedMuzic(muzic)) {
-            currentPosition = listMuzic.indexOf(muzic)
-        } else {
-            listMuzic.add(muzic)
-            currentPosition = listMuzic.indexOf(muzic)
-        }
-    }
 
     fun indexOfMuzic(muzic: Muzic): Int {
         return listMuzic.indexOf(muzic)

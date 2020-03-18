@@ -185,7 +185,7 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
                 play()
             }
         } else {
-            nowPlaylist.addMusicAndPlay(muzic)
+            nowPlaylist.addMusic(muzic)
             play()
         }
     }

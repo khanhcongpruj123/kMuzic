@@ -1,4 +1,5 @@
 object LibraryVersion {
+    const val ROOM = "2.2.4"
     const val CIRCLE_PROGRESSBAR = "3.0.3"
     const val LIFECYCLE_LIVEDATA_KTX = "2.2.0"
     const val LEAK_CANARY = "2.2"
@@ -46,10 +47,18 @@ object LibrariesDependency {
     const val CIRCLE_PROGRESSBAR =
         "com.mikhaellopez:circularprogressbar:${LibraryVersion.CIRCLE_PROGRESSBAR}"
 
+    const val ROOM_RUNTIME = "androidx.room:room-runtime:${LibraryVersion.ROOM}"
+    const val ROOM_KTX = "androidx.room:room-ktx:${LibraryVersion.ROOM}"
+
+}
+
+object KAPT {
+    const val ROOM_KAPT = "androidx.room:room-compiler:${LibraryVersion.ROOM}"
 }
 
 object AnnotationDependency {
     const val GLIDE_COMPILER = "com.github.bumptech.glide:compiler:${LibraryVersion.GLIDE}"
+    const val ROOM_COMPILER = "androidx.room:room-compiler:${LibraryVersion.ROOM}"
 }
 
 object DebugDependency {

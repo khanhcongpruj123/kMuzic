@@ -6,6 +6,4 @@ open class Music(
     val authorName: String?,
     val isFavorite: Boolean,
     val path: String
-) {
-
-}
+)
