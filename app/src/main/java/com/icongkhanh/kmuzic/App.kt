@@ -8,8 +8,10 @@ import com.icongkhanh.kmuzic.domain.repositories.MuzicRepository
 import com.icongkhanh.kmuzic.domain.usecases.AddMusicToFavorite
 import com.icongkhanh.kmuzic.domain.usecases.GetMusicByIdUsecase
 import com.icongkhanh.kmuzic.domain.usecases.LoadAllMusicUseCase
+import com.icongkhanh.kmuzic.domain.usecases.LoadFavoriteMusicUsecase
 import com.icongkhanh.kmuzic.fragments.home.HomeFragmentViewModel
 import com.icongkhanh.kmuzic.fragments.home.homeviewpager.allmusic.AllMusicFragmentViewModel
+import com.icongkhanh.kmuzic.fragments.home.homeviewpager.favouritemusic.FavoriteMusicViewModel
 import com.icongkhanh.kmuzic.fragments.nowplaylist.NowPlaylistViewModel
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
 import com.icongkhanh.kmuzic.utils.PermissionUtils.checkReadPermission
@@ -60,6 +62,16 @@ class App : Application() {
                         viewModel {
                             HomeFragmentViewModel(
                                 get()
+                            )
+                        }
+                    },
+                    module {
+                        factory { LoadFavoriteMusicUsecase(get()) }
+                        viewModel {
+                            FavoriteMusicViewModel(
+                                get(),
+                                get(),
+                                checkReadPermission(androidContext())
                             )
                         }
                     }

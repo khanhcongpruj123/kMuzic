@@ -5,14 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
 import com.icongkhanh.kmuzic.R
+import com.icongkhanh.kmuzic.adapters.ListMusicAdapter
+import com.icongkhanh.kmuzic.utils.mapToServiceModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
-/**
- * A simple [Fragment] subclass.
- * Use the [FavoriteMusic.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FavoriteMusicFragment : Fragment() {
+
+    lateinit var listMusic: RecyclerView
+    lateinit var adapter: ListMusicAdapter
+
+    val vm: FavoriteMusicViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,26 +29,30 @@ class FavoriteMusicFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorite_music, container, false)
+        val view = inflater.inflate(R.layout.fragment_favorite_music, container, false)
+
+        listMusic = view.findViewById(R.id.list_music)
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FavoriteMusic.
-         */
-        // TODO: Rename and change types and number of parameters
-        private var instance: FavoriteMusicFragment? = null
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        @JvmStatic
-        fun getInstance(): FavoriteMusicFragment? {
-            if (instance == null) instance =
-                FavoriteMusicFragment()
-            return instance
+        adapter = ListMusicAdapter(requireContext())
+        adapter.setOnPressItem {
+            vm.playMusic(it.mapToServiceModel())
         }
+        listMusic.adapter = adapter
+
+        subscribeUi()
     }
+
+
+    private fun subscribeUi() {
+        vm.listMusic.observe(viewLifecycleOwner, Observer {
+            adapter.updateListMusic(it)
+        })
+    }
+
 }

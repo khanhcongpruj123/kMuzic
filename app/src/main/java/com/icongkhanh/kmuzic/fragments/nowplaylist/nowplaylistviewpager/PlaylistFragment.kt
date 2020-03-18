@@ -49,7 +49,7 @@ class PlaylistFragment() : Fragment() {
         listMusic.adapter = adapter
 
         vm.listMusic.observe(viewLifecycleOwner, Observer {
-            adapter.updateListMuisc(it)
+            adapter.updateListMusic(it)
         })
 
         vm.currentPlayingMusic.observe(viewLifecycleOwner, Observer {

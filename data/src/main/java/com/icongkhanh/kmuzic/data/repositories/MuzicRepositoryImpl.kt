@@ -42,7 +42,8 @@ class MuzicRepositoryImpl(
     }
 
     override suspend fun loadFavoriteMuzic(): Flow<List<Music>> = flow {
-
+        val res = withContext(Dispatchers.IO) { musicDao.getFavoriteMusic() }
+        emitAll(res.map { list -> list.map { it.mapToDomainModel() } })
     }
 
     override suspend fun addToFavorite(muzicId: String) {

@@ -1,6 +1,5 @@
 package com.icongkhanh.kmuzic.fragments.home.homeviewpager.allmusic
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -73,21 +72,21 @@ class AllMusicFragmentViewModel(
     fun _loadAllMusic() {
         viewModelScope.launch {
             loadAllMusic(false).onStart {
-                Log.d(TAG, "On Start Load Music")
+//                Log.d(TAG, "On Start Load Music")
                 _viewState.value = AllMusicContract.ViewState(
                     music = emptyList(),
                     isLoading = true,
                     error = null
                 )
             }.onEach {
-                Log.d(TAG, "On Start Each")
+//                Log.d(TAG, "On Start Each")
                 _viewState.value = AllMusicContract.ViewState(
                     music = it,
                     isLoading = true,
                     error = null
                 )
             }.onCompletion {
-                Log.d(TAG, "On Completed: ${_viewState.value?.music?.size}")
+//                Log.d(TAG, "On Completed: ${_viewState.value?.music?.size}")
                 _viewState.value = _viewState.value!!.copy(isLoading = false)
             }.launchIn(viewModelScope)
         }
@@ -97,5 +96,9 @@ class AllMusicFragmentViewModel(
         viewModelScope.launch(Dispatchers.Main) {
             _progressMusic.value = progress
         }
+    }
+
+    fun play(muzic: Muzic) {
+        player.play(muzic)
     }
 }

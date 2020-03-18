@@ -11,9 +11,9 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.icongkhanh.kmuzic.R
 import com.icongkhanh.kmuzic.adapters.ListMusicAdapter
-import com.icongkhanh.kmuzic.playermuzicservice.Muzic
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
 import com.icongkhanh.kmuzic.utils.PermissionUtils.checkReadPermission
+import com.icongkhanh.kmuzic.utils.mapToServiceModel
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -56,15 +56,7 @@ class AllMusicFragment : Fragment() {
         // play music when user press item music
         listMusicAdapter.setOnPressItem { muzic ->
 //            Log.d(TAG, "Path: ${muzic.path}")
-            muzicPlayer.play(
-                Muzic(
-                    muzic.id,
-                    muzic.name,
-                    muzic.authorName,
-                    muzic.isFavorite,
-                    muzic.path
-                )
-            )
+            viewModel.play(muzic.mapToServiceModel())
         }
 
         // set adapter for rcv list music
@@ -138,6 +130,6 @@ class AllMusicFragment : Fragment() {
         else loadingView.visibility = View.INVISIBLE
 
         // update list music
-        listMusicAdapter.updateListMuisc(state.music)
+        listMusicAdapter.updateListMusic(state.music)
     }
 }

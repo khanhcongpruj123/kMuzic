@@ -68,6 +68,7 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
             }
 
             this.itemView.setOnClickListener {
+                Log.d(TAG, "Clicked: ${music.name}")
                 onPressItem(music)
             }
         }
@@ -82,7 +83,7 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
         return listMusic.size
     }
 
-    fun updateListMuisc(list: List<Music>) {
+    fun updateListMusic(list: List<Music>) {
         listMusic.clear()
         listMusic.addAll(list)
         notifyDataSetChanged()

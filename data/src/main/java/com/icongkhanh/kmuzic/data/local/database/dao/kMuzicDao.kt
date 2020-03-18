@@ -22,4 +22,7 @@ interface kMuzicDao {
 
     @Query("SELECT * FROM music WHERE music.id = :muzicId")
     fun getMusicById(muzicId: String): MusicDB
+
+    @Query("SELECT * FROM music WHERE music.is_favorite = 1")
+    fun getFavoriteMusic(): Flow<List<MusicDB>>
 }

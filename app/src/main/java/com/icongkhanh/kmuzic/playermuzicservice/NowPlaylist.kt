@@ -49,9 +49,17 @@ class NowPlaylist {
         }
     }
 
+    fun addMusicAndPlay(muzic: Muzic): Int {
+        if (!isExistedMuzic(muzic)) {
+            listMuzic.add(muzic)
+        }
+        currentPosition = listMuzic.indexOfFirst { it.id == muzic.id }
+        return currentPosition
+    }
+
 
     fun indexOfMuzic(muzic: Muzic): Int {
-        return listMuzic.indexOf(muzic)
+        return listMuzic.indexOfFirst { it.id == muzic.id }
     }
 
     fun reset() {

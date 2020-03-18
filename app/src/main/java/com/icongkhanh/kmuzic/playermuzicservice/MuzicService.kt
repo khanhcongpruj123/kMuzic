@@ -111,7 +111,7 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
         if (player.isPlaying) player.stop()
         player.reset()
         player.let { p ->
-//            Log.d(TAG, "Playing Muzic: ${nowPlaylist.getCurrentMuzic()?.name}")
+
             nowPlaylist.getCurrentMuzic()?.path?.let {
                 p.setDataSource(it)
                 p.prepare()
@@ -185,7 +185,7 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
                 play()
             }
         } else {
-            nowPlaylist.addMusic(muzic)
+            nowPlaylist.addMusicAndPlay(muzic)
             play()
         }
     }
