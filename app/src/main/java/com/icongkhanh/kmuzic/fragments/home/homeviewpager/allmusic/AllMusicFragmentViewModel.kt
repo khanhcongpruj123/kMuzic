@@ -1,5 +1,6 @@
 package com.icongkhanh.kmuzic.fragments.home.homeviewpager.allmusic
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,7 +13,7 @@ import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
 import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicPlayingChangedListener
 import com.icongkhanh.kmuzic.playermuzicservice.OnProgressChangedListener
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -82,13 +83,13 @@ class AllMusicFragmentViewModel(
 //                Log.d(TAG, "On Start Each")
                 _viewState.value = AllMusicContract.ViewState(
                     music = it,
-                    isLoading = true,
+                    isLoading = false,
                     error = null
                 )
             }.onCompletion {
-//                Log.d(TAG, "On Completed: ${_viewState.value?.music?.size}")
+                Log.d(TAG, "On Completed: ${_viewState.value?.music?.size}")
                 _viewState.value = _viewState.value!!.copy(isLoading = false)
-            }.launchIn(viewModelScope)
+            }.collect()
         }
     }
 
