@@ -1,6 +1,5 @@
 package com.icongkhanh.kmuzic.fragments.home.homeviewpager.allmusic
 
-
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -42,7 +41,8 @@ class AllMusicFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_all_music, container, false)
@@ -50,10 +50,10 @@ class AllMusicFragment : Fragment() {
         listMusicView = view.findViewById(R.id.list_music)
         loadingView = view.findViewById(R.id.loading_view)
 
-        //init adapter for rcv list music
+        // init adapter for rcv list music
         listMusicAdapter = ListMusicAdapter(context!!)
 
-        //play music when user press item music
+        // play music when user press item music
         listMusicAdapter.setOnPressItem { muzic ->
 //            Log.d(TAG, "Path: ${muzic.path}")
             muzicPlayer.play(
@@ -69,7 +69,6 @@ class AllMusicFragment : Fragment() {
 
         // set adapter for rcv list music
         listMusicView.adapter = listMusicAdapter
-
 
         return view
     }
@@ -134,13 +133,11 @@ class AllMusicFragment : Fragment() {
     }
 
     private fun renderUi(state: AllMusicContract.ViewState) {
-        //hide or show loading view
+        // hide or show loading view
         if (state.isLoading) loadingView.visibility = View.VISIBLE
         else loadingView.visibility = View.INVISIBLE
 
-        //update list music
+        // update list music
         listMusicAdapter.updateListMuisc(state.music)
-
     }
-
 }

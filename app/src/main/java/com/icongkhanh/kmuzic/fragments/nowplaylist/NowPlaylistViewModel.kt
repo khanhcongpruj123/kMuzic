@@ -1,14 +1,22 @@
 package com.icongkhanh.kmuzic.fragments.nowplaylist
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.viewModelScope
 import com.icongkhanh.kmuzic.domain.models.Music
-import com.icongkhanh.kmuzic.playermuzicservice.*
+import com.icongkhanh.kmuzic.playermuzicservice.Muzic
+import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
+import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
+import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicPlayingChangedListener
+import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicStateChangedListener
+import com.icongkhanh.kmuzic.playermuzicservice.OnProgressChangedListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(),
     OnMuzicPlayingChangedListener, OnMuzicStateChangedListener, OnProgressChangedListener {
-
 
     private val _listMusic = MutableLiveData<List<Music>>()
     val listMusic: LiveData<List<Music>> = _listMusic.distinctUntilChanged()
@@ -21,7 +29,6 @@ class NowPlaylistViewModel(val muzicPlayer: MuzicPlayer) : ViewModel(),
 
     private val _progressMusic = MutableLiveData<Float>(0f)
     val progressMusic: LiveData<Float> = _progressMusic.distinctUntilChanged()
-
 
     init {
         muzicPlayer.let {

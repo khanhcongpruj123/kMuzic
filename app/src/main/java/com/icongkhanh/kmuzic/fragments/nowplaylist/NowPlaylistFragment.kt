@@ -1,9 +1,12 @@
 package com.icongkhanh.kmuzic.fragments.nowplaylist
 
-
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSeekBar
@@ -47,7 +50,8 @@ class NowPlaylistFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -80,7 +84,7 @@ class NowPlaylistFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        //init adapter pager and transformer
+        // init adapter pager and transformer
         scaledPagerAdapter = ScaledFragmentPagerAdapter(childFragmentManager)
         scaledTransformer = ScaledTransformer(pager, scaledPagerAdapter)
 
@@ -134,12 +138,10 @@ class NowPlaylistFragment : Fragment() {
 
             btnLike.setImageResource(resId)
         })
-
     }
 
     override fun onStop() {
         viewmodel.onStop()
         super.onStop()
     }
-
 }

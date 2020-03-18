@@ -24,7 +24,8 @@ class ThumbnailFragment() : Fragment() {
     lateinit var thumbnail: ImageView
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
@@ -51,5 +52,4 @@ class ThumbnailFragment() : Fragment() {
     companion object {
         val TAG = this::class.java.simpleName
     }
-
 }

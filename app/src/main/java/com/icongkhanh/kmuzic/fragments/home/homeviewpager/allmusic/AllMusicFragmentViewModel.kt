@@ -1,7 +1,11 @@
 package com.icongkhanh.kmuzic.fragments.home.homeviewpager.allmusic
 
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.viewModelScope
 import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.domain.usecases.LoadAllMusicUseCase
 import com.icongkhanh.kmuzic.playermuzicservice.Muzic
@@ -60,7 +64,6 @@ class AllMusicFragmentViewModel(
     }
 
     fun onStart() {
-
     }
 
     fun onStop() {
@@ -95,5 +98,4 @@ class AllMusicFragmentViewModel(
             _progressMusic.value = progress
         }
     }
-
 }

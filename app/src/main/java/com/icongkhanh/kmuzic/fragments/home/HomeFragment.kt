@@ -22,7 +22,6 @@ import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
 import com.icongkhanh.kmuzic.utils.BitmapUtils
 import org.koin.android.viewmodel.ext.android.viewModel
 
-
 class HomeFragment : Fragment() {
 
     lateinit var tabLayout: TabLayout
@@ -42,7 +41,8 @@ class HomeFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
@@ -61,13 +61,13 @@ class HomeFragment : Fragment() {
         tvMusicName = view.findViewById(R.id.music_name)
         imgThumbnail = view.findViewById(R.id.controller_thumnail)
 
-        //setup view
+        // setup view
         tabLayout.setupWithViewPager(viewPager)
         viewpagerAdapter = HomeViewPagerAdapter(childFragmentManager)
         viewPager.adapter = viewpagerAdapter
         tvMusicName.isSelected = true
 
-        //setup event
+        // setup event
 
         controllerView.setOnClickListener {
             goToNowPlaylistFragment()
@@ -78,7 +78,6 @@ class HomeFragment : Fragment() {
         }
 
         subscribeUi()
-
     }
 
     override fun onStart() {
@@ -90,7 +89,6 @@ class HomeFragment : Fragment() {
         super.onStop()
 //        viewModel.onStop()
     }
-
 
     private fun goToNowPlaylistFragment() {
         val extras = FragmentNavigatorExtras(controllerView to "shared_element_container")

@@ -48,7 +48,7 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
             this.musicName.text = music.name
 //            this.progressBar.progress = progress * 100
 
-            Log.d(TAG, "Index playing: ${position}/${indexPlaying}")
+            Log.d(TAG, "Index playing: $position/$indexPlaying")
             if (position == indexPlaying) {
                 this.bgProgressBar.visibility = View.VISIBLE
                 currentMusicPlayingItem = this
@@ -103,7 +103,7 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
             val isTrue = it.id == music.id
             isTrue
         }
-        Log.d(TAG, "Update index: ${indexPlaying} ${music.id}")
+        Log.d(TAG, "Update index: $indexPlaying ${music.id}")
         notifyItemChanged(indexPlaying)
         notifyItemChanged(oldIndex)
 //        notifyDataSetChanged()
@@ -117,5 +117,4 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
     companion object {
         val TAG = "ListMusicAdapter"
     }
-
 }

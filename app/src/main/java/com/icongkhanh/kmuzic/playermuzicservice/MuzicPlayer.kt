@@ -23,7 +23,6 @@ class MuzicPlayer(val context: Context) {
             muzicService = binder.getService()
             onBind()
         }
-
     }
 
     private val stateMuzicListener = mutableListOf<OnMuzicStateChangedListener>()
@@ -67,7 +66,6 @@ class MuzicPlayer(val context: Context) {
             bind()
         }
         muzicService?.playOrPause()
-
     }
 
     fun pause() {
@@ -89,12 +87,11 @@ class MuzicPlayer(val context: Context) {
         muzicService?.previous()
     }
 
-    fun isValidate() : Boolean {
+    fun isValidate(): Boolean {
         return isBind || muzicService != null
     }
 
     fun getListMusic() = muzicService?.nowPlaylist?.listMuzic
-
 
     fun addOnStateChangedListener(listener: OnMuzicStateChangedListener) {
 //        Log.d("Player", "add state listener")

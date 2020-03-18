@@ -3,7 +3,6 @@ package com.icongkhanh.kmuzic.utils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
-import android.util.Log
 
 object BitmapUtils {
 

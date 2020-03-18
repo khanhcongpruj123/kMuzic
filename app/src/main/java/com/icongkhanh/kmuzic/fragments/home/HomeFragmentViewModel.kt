@@ -6,7 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
 import com.icongkhanh.kmuzic.domain.models.Music
-import com.icongkhanh.kmuzic.playermuzicservice.*
+import com.icongkhanh.kmuzic.playermuzicservice.Muzic
+import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
+import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
+import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicPlayingChangedListener
+import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicStateChangedListener
 
 class HomeFragmentViewModel(
     private val player: MuzicPlayer
@@ -46,7 +50,6 @@ class HomeFragmentViewModel(
     }
 
     fun onStart() {
-
     }
 
     override fun onCleared() {
@@ -57,5 +60,4 @@ class HomeFragmentViewModel(
     companion object {
         val TAG = "HomeFragmentViewModel"
     }
-
 }

@@ -17,7 +17,6 @@ import org.koin.dsl.module
 
 class App : Application() {
 
-
     override fun onCreate() {
         super.onCreate()
 

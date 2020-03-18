@@ -1,6 +1,5 @@
 package com.icongkhanh.kmuzic
 
-import android.Manifest
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
@@ -15,9 +14,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         muzicPlayer.bind()
-
     }
-
 
     override fun onResume() {
         super.onResume()
@@ -28,6 +25,4 @@ class MainActivity : AppCompatActivity() {
 
 //        muzicPlayer.unbind()
     }
-
 }
-

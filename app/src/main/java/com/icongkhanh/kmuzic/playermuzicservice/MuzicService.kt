@@ -1,6 +1,10 @@
 package com.icongkhanh.kmuzic.playermuzicservice
 
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
@@ -42,7 +46,6 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
         }
     }
 
-
     private var stateMuzicListener = mutableListOf<OnMuzicStateChangedListener>()
     private var muzicPlayingChangedListener = mutableListOf<OnMuzicPlayingChangedListener>()
     private var progressChangedListener = mutableListOf<OnProgressChangedListener>()
@@ -54,7 +57,6 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
 
         this.addOnStateMuzicChanged(this)
     }
-
 
     override fun onCreate() {
         super.onCreate()
@@ -102,7 +104,6 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
         }
     }
 
-
     fun play() {
 
         startForeground(1, buildNotification(MuzicState.PLAY))
@@ -120,7 +121,6 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
                 handleMuzicPlayingChangedListener(nowPlaylist.getCurrentMuzic())
             }
         }
-
     }
 
     private fun handleMuzicPlayingChangedListener(currentMuzic: Muzic?) {
@@ -176,7 +176,6 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
             val index = nowPlaylist.indexOfMuzic(muzic)
             if (index == nowPlaylist.currentPosition) {
                 if (player.isPlaying) {
-
                 } else {
                     if (muzicState == MuzicState.PAUSE) player.start()
                     else play()
@@ -210,7 +209,6 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
     }
 
     fun buildNotification(state: MuzicState): Notification {
-
 
         val pendingIntent: PendingIntent =
             Intent(this, MainActivity::class.java).let { notificationIntent ->
@@ -270,7 +268,6 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
      * above android O, must create notification channel before create notification
      * */
     private fun createNotificationChannel() {
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "kMuzic"
@@ -333,6 +330,4 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
         if (state == MuzicState.IDLE) return
         startForeground(1, buildNotification(state))
     }
-
-
 }
