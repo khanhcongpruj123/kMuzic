@@ -6,10 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.icongkhanh.kmuzic.R
+import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.fragments.BaseMusicFragment
 import com.icongkhanh.kmuzic.utils.PermissionUtils.checkReadPermission
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -53,12 +56,13 @@ class AllMusicFragment : BaseMusicFragment() {
     override fun getLayoutManager(): RecyclerView.LayoutManager =
         LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun getListMusic(): LiveData<List<Music>> = viewModel.viewState.map { it.music }
 
-        subscribeUi()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
 
+        subscribeUi()
     }
 
     /**
@@ -94,8 +98,5 @@ class AllMusicFragment : BaseMusicFragment() {
         // hide or show loading view
         if (state.isLoading) loadingView.visibility = View.VISIBLE
         else loadingView.visibility = View.INVISIBLE
-
-        // update list music
-        updateListMusic(state.music)
     }
 }

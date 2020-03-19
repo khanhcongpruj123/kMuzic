@@ -32,6 +32,8 @@ class NowPlaylistFragment : Fragment() {
     private val viewmodel: MusicViewModel by sharedViewModel()
 
     lateinit var pager: ViewPager
+    lateinit var scaledTransformer: ScaledTransformer
+    lateinit var scaledPagerAdapter: ScaledFragmentPagerAdapter
     lateinit var btnPlayOrPause: ImageButton
     lateinit var btnNext: ImageButton
     lateinit var btnPrevious: ImageButton
@@ -39,8 +41,7 @@ class NowPlaylistFragment : Fragment() {
     lateinit var tvMusicName: TextView
     lateinit var tvAuthorName: TextView
     lateinit var btnBack: ImageButton
-    lateinit var scaledTransformer: ScaledTransformer
-    lateinit var scaledPagerAdapter: ScaledFragmentPagerAdapter
+
     lateinit var btnLike: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -4,10 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.icongkhanh.kmuzic.R
+import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.fragments.BaseMusicFragment
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -34,7 +35,6 @@ class FavoriteMusicFragment : BaseMusicFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        subscribeUi()
     }
 
     override fun getMusicRecyclerView(): RecyclerView = listMusic
@@ -42,11 +42,11 @@ class FavoriteMusicFragment : BaseMusicFragment() {
     override fun getLayoutManager(): RecyclerView.LayoutManager =
         LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
 
+    override fun getListMusic(): LiveData<List<Music>> = vm.listMusic
+
 
     private fun subscribeUi() {
-        vm.listMusic.observe(viewLifecycleOwner, Observer {
-            updateListMusic(it)
-        })
+
     }
 
 

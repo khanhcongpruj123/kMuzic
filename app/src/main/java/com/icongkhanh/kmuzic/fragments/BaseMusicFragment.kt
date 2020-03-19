@@ -1,9 +1,9 @@
 package com.icongkhanh.kmuzic.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.icongkhanh.kmuzic.adapters.ListMusicAdapter
@@ -21,6 +21,8 @@ abstract class BaseMusicFragment : Fragment() {
     abstract fun getMusicRecyclerView(): RecyclerView
 
     abstract fun getLayoutManager(): RecyclerView.LayoutManager
+
+    abstract fun getListMusic(): LiveData<List<Music>>
 
     override fun onStart() {
         super.onStart()
@@ -51,9 +53,17 @@ abstract class BaseMusicFragment : Fragment() {
     }
 
     private fun subscribeUi() {
+
+        getListMusic().observe(viewLifecycleOwner, Observer {
+            it?.let {
+                adapter.updateListMusic(it)
+                onListMusicChanged()
+            }
+        })
+
         musicVM.playingMusic.observe(viewLifecycleOwner, Observer {
             if (it != null) {
-                Log.d("AppLog", "playing music: ${it.name}")
+//                Log.d("AppLog", "playing music: ${it.name}")
                 adapter.updatePlayingMusic(it)
                 onPlayingMusicChanged()
             }
@@ -68,28 +78,34 @@ abstract class BaseMusicFragment : Fragment() {
         })
 
         musicVM.stateMusic.observe(viewLifecycleOwner, Observer {
-            onPlayingMusicChanged()
+            onStateMusicChanged()
         })
     }
 
-    fun onMusicItemClicked() {
-
+    protected fun onListMusicChanged() {
+        //Nothing waite u override
     }
 
-    fun onPlayingMusicChanged() {
+    protected fun onMusicItemClicked() {
 
+    }  //Nothing waite u override
+
+    protected fun onPlayingMusicChanged() {
+        //Nothing waite u override
     }
 
-    fun onProgressChanged() {
-
+    protected fun onProgressChanged() {
+        //Nothing waite u override
     }
 
-    fun onStateMusicChanged() {
-
+    protected fun onStateMusicChanged() {
+        //Nothing waite u override
     }
 
-    fun updateListMusic(list: List<Music>) {
+    protected fun updateListMusic(list: List<Music>) {
         adapter.updateListMusic(list)
     }
+
+    protected fun getMusicViewModel() = musicVM
 
 }

@@ -4,19 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.LiveData
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.icongkhanh.kmuzic.R
-import com.icongkhanh.kmuzic.adapters.ListMusicAdapter
-import com.icongkhanh.kmuzic.fragments.MusicViewModel
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import com.icongkhanh.kmuzic.domain.models.Music
+import com.icongkhanh.kmuzic.fragments.BaseMusicFragment
 
-class PlaylistFragment() : Fragment() {
+class PlaylistFragment() : BaseMusicFragment() {
 
     lateinit var listMusic: RecyclerView
-    lateinit var adapter: ListMusicAdapter
-    val vm by sharedViewModel<MusicViewModel>()
+    override fun getMusicRecyclerView(): RecyclerView = listMusic
+
+    override fun getLayoutManager(): RecyclerView.LayoutManager =
+        LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+
+    override fun getListMusic(): LiveData<List<Music>> = getMusicViewModel().nowplaylist
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,31 +27,9 @@ class PlaylistFragment() : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_playlist, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+        val view = inflater.inflate(R.layout.fragment_playlist, container, false)
         listMusic = view.findViewById(R.id.list_music)
-
-        adapter = ListMusicAdapter(requireContext())
-        adapter.setOnPressItem {
-            vm.play(it)
-        }
-        listMusic.adapter = adapter
-
-        vm.nowplaylist.observe(viewLifecycleOwner, Observer {
-            adapter.updateListMusic(it)
-        })
-
-        vm.playingMusic.observe(viewLifecycleOwner, Observer {
-            adapter.updatePlayingMusic(it)
-        })
-
-        vm.progressMusic.observe(viewLifecycleOwner, Observer {
-            adapter.updateProgress(it)
-        })
+        return view
     }
 
     companion object {

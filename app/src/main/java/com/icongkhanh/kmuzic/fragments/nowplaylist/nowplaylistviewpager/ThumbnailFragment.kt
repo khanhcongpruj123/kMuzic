@@ -20,7 +20,7 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
  */
 class ThumbnailFragment() : Fragment() {
 
-    val nowplaylistVM by sharedViewModel<MusicViewModel>()
+    val musicVM by sharedViewModel<MusicViewModel>()
     lateinit var thumbnail: ImageView
 
     override fun onCreateView(
@@ -37,13 +37,15 @@ class ThumbnailFragment() : Fragment() {
 
         thumbnail = view.findViewById(R.id.thumbnail)
 
-        nowplaylistVM.playingMusic.observe(viewLifecycleOwner, Observer {
-            lifecycleScope.launch {
-                val img = BitmapUtils.getBitmapFromMusicFile(it.path)
-                img?.let { bm ->
-                    Glide.with(this@ThumbnailFragment)
-                        .load(bm)
-                        .into(thumbnail)
+        musicVM.playingMusic.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                lifecycleScope.launch {
+                    val img = BitmapUtils.getBitmapFromMusicFile(it.path)
+                    img?.let { bm ->
+                        Glide.with(this@ThumbnailFragment)
+                            .load(bm)
+                            .into(thumbnail)
+                    }
                 }
             }
         })
