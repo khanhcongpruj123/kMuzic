@@ -5,14 +5,14 @@ import com.icongkhanh.kmuzic.data.di.localModule
 import com.icongkhanh.kmuzic.data.local.memory.MemoryMusicLoader
 import com.icongkhanh.kmuzic.data.repositories.MuzicRepositoryImpl
 import com.icongkhanh.kmuzic.domain.repositories.MuzicRepository
-import com.icongkhanh.kmuzic.domain.usecases.AddMusicToFavorite
 import com.icongkhanh.kmuzic.domain.usecases.GetMusicByIdUsecase
 import com.icongkhanh.kmuzic.domain.usecases.LoadAllMusicUseCase
 import com.icongkhanh.kmuzic.domain.usecases.LoadFavoriteMusicUsecase
+import com.icongkhanh.kmuzic.domain.usecases.ToggleFavoriteMusicUsecase
+import com.icongkhanh.kmuzic.fragments.MusicViewModel
 import com.icongkhanh.kmuzic.fragments.home.HomeFragmentViewModel
 import com.icongkhanh.kmuzic.fragments.home.homeviewpager.allmusic.AllMusicFragmentViewModel
 import com.icongkhanh.kmuzic.fragments.home.homeviewpager.favouritemusic.FavoriteMusicViewModel
-import com.icongkhanh.kmuzic.fragments.nowplaylist.NowPlaylistViewModel
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
 import com.icongkhanh.kmuzic.utils.PermissionUtils.checkReadPermission
 import org.koin.android.ext.koin.androidContext
@@ -39,7 +39,6 @@ class App : Application() {
 
                             AllMusicFragmentViewModel(
                                 get(),
-                                get(),
                                 checkReadPermission(this@App)
                             )
                         }
@@ -48,15 +47,14 @@ class App : Application() {
                         single { MuzicPlayer(this@App) }
                     },
                     module {
-                        factory { GetMusicByIdUsecase(get()) }
-                        factory { AddMusicToFavorite(get()) }
-                        viewModel {
-                            NowPlaylistViewModel(
-                                get(),
-                                get(),
-                                get()
-                            )
-                        }
+
+//                        viewModel {
+//                            NowPlaylistViewModel(
+//                                get(),
+//                                get(),
+//                                get()
+//                            )
+//                        }
                     },
                     module {
                         viewModel {
@@ -73,6 +71,13 @@ class App : Application() {
                                 get(),
                                 checkReadPermission(androidContext())
                             )
+                        }
+                    },
+                    module {
+                        factory { GetMusicByIdUsecase(get()) }
+                        factory { ToggleFavoriteMusicUsecase(get()) }
+                        viewModel {
+                            MusicViewModel(get(), get(), get())
                         }
                     }
                 )

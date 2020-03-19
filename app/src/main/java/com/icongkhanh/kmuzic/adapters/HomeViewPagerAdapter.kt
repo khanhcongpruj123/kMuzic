@@ -12,16 +12,14 @@ class HomeViewPagerAdapter(val fm: FragmentManager) :
     override fun getItem(position: Int): Fragment {
         return when (position) {
             0 -> AllMusicFragment()
-            1 -> FavoriteMusicFragment()
-            else -> AllMusicFragment()
+            else -> FavoriteMusicFragment()
         }
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
         return when (position) {
             0 -> "All Music"
-            1 -> "Favorite Music"
-            else -> ""
+            else -> "Favorite Music"
         }
     }
 

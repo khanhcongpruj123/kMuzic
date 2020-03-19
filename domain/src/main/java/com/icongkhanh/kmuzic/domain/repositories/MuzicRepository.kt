@@ -11,4 +11,6 @@ interface MuzicRepository {
     suspend fun addToFavorite(muzicId: String)
     suspend fun addToPlaylist(muzicId: String, playlistId: String)
     suspend fun getMusicById(id: String): Flow<Music>
+    suspend fun removeFavorite(muzicId: String)
+    suspend fun toggleFavoriteMusic(muzicId: String)
 }

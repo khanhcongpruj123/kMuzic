@@ -1,7 +1,6 @@
 package com.icongkhanh.kmuzic.fragments.nowplaylist
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -16,12 +15,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.transition.MaterialContainerTransform
 import com.icongkhanh.kmuzic.R
+import com.icongkhanh.kmuzic.fragments.MusicViewModel
 import com.icongkhanh.kmuzic.fragments.nowplaylist.nowplaylistviewpager.PlaylistFragment
 import com.icongkhanh.kmuzic.fragments.nowplaylist.nowplaylistviewpager.ThumbnailFragment
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
 import com.icongkhanh.scaledviewpager.ScaledFragmentPagerAdapter
 import com.icongkhanh.scaledviewpager.ScaledTransformer
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class NowPlaylistFragment : Fragment() {
 
@@ -29,7 +29,7 @@ class NowPlaylistFragment : Fragment() {
         val TAG = "NowPlaylistFragment"
     }
 
-    private val viewmodel: NowPlaylistViewModel by viewModel()
+    private val viewmodel: MusicViewModel by sharedViewModel()
 
     lateinit var pager: ViewPager
     lateinit var btnPlayOrPause: ImageButton
@@ -47,6 +47,11 @@ class NowPlaylistFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         sharedElementEnterTransition = MaterialContainerTransform(requireContext())
+    }
+
+    override fun onStart() {
+        super.onStart()
+//        viewmodel.onStart()
     }
 
     override fun onCreateView(
@@ -85,7 +90,7 @@ class NowPlaylistFragment : Fragment() {
         }
 
         btnLike.setOnClickListener {
-            viewmodel.addMusicToFavorite()
+            viewmodel.toggleFavoriteMusic()
         }
 
         // init adapter pager and transformer
@@ -112,7 +117,7 @@ class NowPlaylistFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // subcribe Ui
-        viewmodel.stateMuzic.observe(viewLifecycleOwner, Observer {
+        viewmodel.stateMusic.observe(viewLifecycleOwner, Observer {
             when (it) {
                 MuzicState.PLAY -> {
                     btnPlayOrPause.setImageResource(R.drawable.ic_pause_circle_filled_black_48dp)
@@ -126,25 +131,24 @@ class NowPlaylistFragment : Fragment() {
             seekBar.progress = (it * 100).toInt()
         })
 
-        viewmodel.currentPlayingMusic.observe(viewLifecycleOwner, Observer { currMusic ->
-            Log.d(TAG, "On Oserver Current Muzic: ${currMusic.name}")
+        viewmodel.playingMusic.observe(viewLifecycleOwner, Observer { currMusic ->
             currMusic?.let { muzic ->
                 tvAuthorName.text = muzic.authorName
                 tvMusicName.text = muzic.name
-            }
 
-            val resId = if (currMusic.isFavorite) {
-                R.drawable.ic_favorite_black_36dp
-            } else {
-                R.drawable.ic_favorite_border_black_36dp
-            }
+                val resId = if (currMusic.isFavorite) {
+                    R.drawable.ic_favorite_black_36dp
+                } else {
+                    R.drawable.ic_favorite_border_black_36dp
+                }
 
-            btnLike.setImageResource(resId)
+                btnLike.setImageResource(resId)
+            }
         })
     }
 
     override fun onStop() {
-        viewmodel.onStop()
+//        viewmodel.onStop()
         super.onStop()
     }
 }

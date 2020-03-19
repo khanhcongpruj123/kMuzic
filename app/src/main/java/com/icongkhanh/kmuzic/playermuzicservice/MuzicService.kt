@@ -49,6 +49,7 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
     private var stateMuzicListener = mutableListOf<OnMuzicStateChangedListener>()
     private var muzicPlayingChangedListener = mutableListOf<OnMuzicPlayingChangedListener>()
     private var progressChangedListener = mutableListOf<OnProgressChangedListener>()
+    private var nowPlayListChangedListener = mutableListOf<OnNowPlayListChangedListener>()
 
     init {
         player.setOnCompletionListener {
@@ -186,6 +187,7 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
             }
         } else {
             nowPlaylist.addMusicAndPlay(muzic)
+            handleNowPlaylistChanged(nowPlaylist.listMuzic)
             play()
         }
     }
@@ -317,6 +319,12 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
         }
     }
 
+    fun handleNowPlaylistChanged(list: List<Muzic>) {
+        nowPlayListChangedListener.forEach {
+            it.onChanged(list)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
     }
@@ -329,5 +337,13 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
         // when service stop, state is idle, notification will be removed, if startForeground, notification will be created, it is fail logic
         if (state == MuzicState.IDLE) return
         startForeground(1, buildNotification(state))
+    }
+
+    fun addOnNowPlaylistChanged(listeners: List<OnNowPlayListChangedListener>) {
+        this.nowPlayListChangedListener.addAll(listeners)
+    }
+
+    fun addOnNowPlaylistChanged(listener: OnNowPlayListChangedListener) {
+        this.nowPlayListChangedListener.add(listener)
     }
 }

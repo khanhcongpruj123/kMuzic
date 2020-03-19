@@ -1,7 +1,6 @@
 package com.icongkhanh.kmuzic.fragments.nowplaylist.nowplaylistviewpager
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,15 +9,14 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.icongkhanh.kmuzic.R
 import com.icongkhanh.kmuzic.adapters.ListMusicAdapter
-import com.icongkhanh.kmuzic.fragments.nowplaylist.NowPlaylistViewModel
-import com.icongkhanh.kmuzic.playermuzicservice.Muzic
+import com.icongkhanh.kmuzic.fragments.MusicViewModel
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class PlaylistFragment() : Fragment() {
 
     lateinit var listMusic: RecyclerView
     lateinit var adapter: ListMusicAdapter
-    val vm by sharedViewModel<NowPlaylistViewModel>()
+    val vm by sharedViewModel<MusicViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,24 +34,15 @@ class PlaylistFragment() : Fragment() {
 
         adapter = ListMusicAdapter(requireContext())
         adapter.setOnPressItem {
-            vm.play(
-                Muzic(
-                    it.id,
-                    it.name,
-                    it.authorName,
-                    it.isFavorite,
-                    it.path
-                )
-            )
+            vm.play(it)
         }
         listMusic.adapter = adapter
 
-        vm.listMusic.observe(viewLifecycleOwner, Observer {
+        vm.nowplaylist.observe(viewLifecycleOwner, Observer {
             adapter.updateListMusic(it)
         })
 
-        vm.currentPlayingMusic.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "Music: $it")
+        vm.playingMusic.observe(viewLifecycleOwner, Observer {
             adapter.updatePlayingMusic(it)
         })
 

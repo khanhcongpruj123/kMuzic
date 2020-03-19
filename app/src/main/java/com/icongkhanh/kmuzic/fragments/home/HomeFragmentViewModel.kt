@@ -11,6 +11,7 @@ import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
 import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicPlayingChangedListener
 import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicStateChangedListener
+import com.icongkhanh.kmuzic.utils.mapToDomainModel
 
 class HomeFragmentViewModel(
     private val player: MuzicPlayer
@@ -24,12 +25,9 @@ class HomeFragmentViewModel(
 
     init {
 
-        player.addOnMuzicPlayingChangedListener(this)
-        player.addOnStateChangedListener(this)
-
         _musicState.value = player.getMusicState()
         player.getCurrentMuzic()?.let {
-            _playingMusic.value = it.toDomainModel()
+            _playingMusic.value = it.mapToDomainModel()
         }
     }
 
@@ -38,7 +36,7 @@ class HomeFragmentViewModel(
     }
 
     override fun onChanged(muzic: Muzic) {
-        _playingMusic.value = muzic.toDomainModel()
+        _playingMusic.value = muzic.mapToDomainModel()
     }
 
     fun playOrPause() {
@@ -46,10 +44,12 @@ class HomeFragmentViewModel(
     }
 
     fun onStop() {
-//        player.unsubscribe(this)
+        player.unsubscribe(this)
     }
 
     fun onStart() {
+        player.addOnMuzicPlayingChangedListener(this)
+        player.addOnStateChangedListener(this)
     }
 
     override fun onCleared() {

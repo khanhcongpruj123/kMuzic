@@ -2,32 +2,27 @@ package com.icongkhanh.kmuzic.fragments.home.homeviewpager.allmusic
 
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.icongkhanh.kmuzic.R
-import com.icongkhanh.kmuzic.adapters.ListMusicAdapter
-import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
+import com.icongkhanh.kmuzic.fragments.BaseMusicFragment
 import com.icongkhanh.kmuzic.utils.PermissionUtils.checkReadPermission
-import com.icongkhanh.kmuzic.utils.mapToServiceModel
-import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 /**
  * A simple [Fragment] subclass.
  */
-class AllMusicFragment : Fragment() {
+class AllMusicFragment : BaseMusicFragment() {
 
     lateinit var listMusicView: RecyclerView
-    lateinit var listMusicAdapter: ListMusicAdapter
     lateinit var loadingView: View
 
     val viewModel: AllMusicFragmentViewModel by viewModel()
-    val muzicPlayer: MuzicPlayer by inject()
 
     companion object {
         val TAG = "AllMusicFragment"
@@ -50,31 +45,20 @@ class AllMusicFragment : Fragment() {
         listMusicView = view.findViewById(R.id.list_music)
         loadingView = view.findViewById(R.id.loading_view)
 
-        // init adapter for rcv list music
-        listMusicAdapter = ListMusicAdapter(context!!)
-
-        // play music when user press item music
-        listMusicAdapter.setOnPressItem { muzic ->
-//            Log.d(TAG, "Path: ${muzic.path}")
-            viewModel.play(muzic.mapToServiceModel())
-        }
-
-        // set adapter for rcv list music
-        listMusicView.adapter = listMusicAdapter
-
         return view
     }
 
+    override fun getMusicRecyclerView(): RecyclerView = listMusicView
+
+    override fun getLayoutManager(): RecyclerView.LayoutManager =
+        LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
         subscribeUi()
-    }
 
-    override fun onStart() {
+        super.onViewCreated(view, savedInstanceState)
 
-        super.onStart()
-        viewModel.onStart()
     }
 
     /**
@@ -97,30 +81,12 @@ class AllMusicFragment : Fragment() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        viewModel.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
     /**
      *  subscribe viewmodel's data
      * */
     private fun subscribeUi() {
-        Log.d(TAG, "Subscribe UI!")
         viewModel.viewState.observe(viewLifecycleOwner, Observer { state ->
             renderUi(state)
-        })
-        viewModel.playingMusic.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "Update Playing Music!")
-            listMusicAdapter.updatePlayingMusic(it)
-        })
-
-        viewModel.progressMusic.observe(viewLifecycleOwner, Observer {
-            listMusicAdapter.updateProgress(it)
         })
     }
 
@@ -130,6 +96,6 @@ class AllMusicFragment : Fragment() {
         else loadingView.visibility = View.INVISIBLE
 
         // update list music
-        listMusicAdapter.updateListMusic(state.music)
+        updateListMusic(state.music)
     }
 }

@@ -60,4 +60,18 @@ class MuzicRepositoryImpl(
         flow {
             emit(withContext(Dispatchers.IO) { musicDao.getMusicById(id) }.mapToDomainModel())
         }
+
+    override suspend fun removeFavorite(muzicId: String) {
+        val music =
+            withContext(Dispatchers.IO) { musicDao.getMusicById(muzicId) }.copy(isFavorite = false)
+        withContext(Dispatchers.IO) { musicDao.updateMusic(music) }
+    }
+
+    override suspend fun toggleFavoriteMusic(muzicId: String) {
+        val music =
+            withContext(Dispatchers.IO) { musicDao.getMusicById(muzicId) }.let {
+                it.copy(isFavorite = !it.isFavorite)
+            }
+        withContext(Dispatchers.IO) { musicDao.updateMusic(music) }
+    }
 }

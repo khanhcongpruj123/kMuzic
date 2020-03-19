@@ -10,3 +10,11 @@ fun Music.mapToServiceModel() = Muzic(
     this.isFavorite,
     this.path
 )
+
+fun Muzic.mapToDomainModel() = Music(
+    this.id,
+    this.name,
+    this.author,
+    this.isFavorite,
+    this.path
+)

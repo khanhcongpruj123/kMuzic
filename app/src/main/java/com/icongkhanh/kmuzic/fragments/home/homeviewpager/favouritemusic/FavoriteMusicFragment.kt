@@ -4,24 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.icongkhanh.kmuzic.R
-import com.icongkhanh.kmuzic.adapters.ListMusicAdapter
-import com.icongkhanh.kmuzic.utils.mapToServiceModel
+import com.icongkhanh.kmuzic.fragments.BaseMusicFragment
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class FavoriteMusicFragment : Fragment() {
+class FavoriteMusicFragment : BaseMusicFragment() {
 
     lateinit var listMusic: RecyclerView
-    lateinit var adapter: ListMusicAdapter
 
     val vm: FavoriteMusicViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,20 +34,20 @@ class FavoriteMusicFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = ListMusicAdapter(requireContext())
-        adapter.setOnPressItem {
-            vm.playMusic(it.mapToServiceModel())
-        }
-        listMusic.adapter = adapter
-
         subscribeUi()
     }
+
+    override fun getMusicRecyclerView(): RecyclerView = listMusic
+
+    override fun getLayoutManager(): RecyclerView.LayoutManager =
+        LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
 
 
     private fun subscribeUi() {
         vm.listMusic.observe(viewLifecycleOwner, Observer {
-            adapter.updateListMusic(it)
+            updateListMusic(it)
         })
     }
+
 
 }

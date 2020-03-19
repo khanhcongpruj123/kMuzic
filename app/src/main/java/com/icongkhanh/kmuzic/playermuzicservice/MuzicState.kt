@@ -12,6 +12,10 @@ interface OnProgressChangedListener {
     fun onChanged(progress: Float)
 }
 
+interface OnNowPlayListChangedListener {
+    fun onChanged(list: List<Muzic>)
+}
+
 enum class MuzicState {
     PLAY,
     PAUSE,

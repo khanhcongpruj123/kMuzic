@@ -98,16 +98,16 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
         onPressItem = callback
     }
 
-    fun updatePlayingMusic(music: Music) {
+    fun updatePlayingMusic(music: Music?) {
+        if (music == null) return
         oldIndex = indexPlaying
         indexPlaying = listMusic.indexOfFirst {
             val isTrue = it.id == music.id
             isTrue
         }
-        Log.d(TAG, "Update index: $indexPlaying ${music.id}")
-        notifyItemChanged(indexPlaying)
+//        Log.d(TAG, "Update index: $indexPlaying ${music.id}")
         notifyItemChanged(oldIndex)
-//        notifyDataSetChanged()
+        notifyItemChanged(indexPlaying)
     }
 
     fun updateProgress(progress: Float? = 0f) {

@@ -10,7 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.icongkhanh.kmuzic.R
-import com.icongkhanh.kmuzic.fragments.nowplaylist.NowPlaylistViewModel
+import com.icongkhanh.kmuzic.fragments.MusicViewModel
 import com.icongkhanh.kmuzic.utils.BitmapUtils
 import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -20,7 +20,7 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
  */
 class ThumbnailFragment() : Fragment() {
 
-    val nowplaylistVM by sharedViewModel<NowPlaylistViewModel>()
+    val nowplaylistVM by sharedViewModel<MusicViewModel>()
     lateinit var thumbnail: ImageView
 
     override fun onCreateView(
@@ -37,7 +37,7 @@ class ThumbnailFragment() : Fragment() {
 
         thumbnail = view.findViewById(R.id.thumbnail)
 
-        nowplaylistVM.currentPlayingMusic.observe(viewLifecycleOwner, Observer {
+        nowplaylistVM.playingMusic.observe(viewLifecycleOwner, Observer {
             lifecycleScope.launch {
                 val img = BitmapUtils.getBitmapFromMusicFile(it.path)
                 img?.let { bm ->

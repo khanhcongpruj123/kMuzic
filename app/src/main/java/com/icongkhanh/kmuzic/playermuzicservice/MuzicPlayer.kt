@@ -28,6 +28,7 @@ class MuzicPlayer(val context: Context) {
     private val stateMuzicListener = mutableListOf<OnMuzicStateChangedListener>()
     private val muzicPlayingListener = mutableListOf<OnMuzicPlayingChangedListener>()
     private val progressChangedListener = mutableListOf<OnProgressChangedListener>()
+    private val nowPlayListChangedListener = mutableListOf<OnNowPlayListChangedListener>()
 
     fun bind() {
         val intent = Intent(context, MuzicService::class.java)
@@ -46,6 +47,7 @@ class MuzicPlayer(val context: Context) {
             it.addOnStateMuzicChanged(stateMuzicListener)
             it.addOnMuzicPlayingChanged(muzicPlayingListener)
             it.addOnProgressChanged(progressChangedListener)
+            it.addOnNowPlaylistChanged(nowPlayListChangedListener)
         }
     }
 
@@ -112,6 +114,11 @@ class MuzicPlayer(val context: Context) {
         muzicService?.addOnProgressChanged(listener)
     }
 
+    fun addOnNowplaylistChangedListener(listener: OnNowPlayListChangedListener) {
+        this.nowPlayListChangedListener.add(listener)
+        muzicService?.addOnNowPlaylistChanged(listener)
+    }
+
     fun getProgress() = muzicService?.getProgress()
 
     fun getCurrentMuzic() = muzicService?.nowPlaylist?.getCurrentMuzic()
@@ -120,6 +127,7 @@ class MuzicPlayer(val context: Context) {
         if (any is OnMuzicPlayingChangedListener) muzicPlayingListener.remove(any)
         if (any is OnMuzicStateChangedListener) stateMuzicListener.remove(any)
         if (any is OnProgressChangedListener) progressChangedListener.remove(any)
+        if (any is OnNowPlayListChangedListener) nowPlayListChangedListener.remove(any)
     }
 
     fun getMusicState(): MuzicState? {
