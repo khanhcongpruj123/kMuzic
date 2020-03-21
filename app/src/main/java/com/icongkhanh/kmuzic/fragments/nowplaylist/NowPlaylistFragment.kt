@@ -123,7 +123,7 @@ class NowPlaylistFragment : Fragment() {
                 MuzicState.PLAY -> {
                     btnPlayOrPause.setImageResource(R.drawable.ic_pause_circle_filled_black_48dp)
                 }
-                MuzicState.PAUSE, MuzicState.IDLE -> {
+                MuzicState.PAUSE, MuzicState.STOP -> {
                     btnPlayOrPause.setImageResource(R.drawable.ic_play_circle_filled_black_48dp)
                 }
             }

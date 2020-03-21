@@ -19,5 +19,5 @@ interface OnNowPlayListChangedListener {
 enum class MuzicState {
     PLAY,
     PAUSE,
-    IDLE,
+    STOP,
 }

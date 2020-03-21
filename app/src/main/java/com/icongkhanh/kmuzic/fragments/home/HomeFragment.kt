@@ -105,7 +105,7 @@ class HomeFragment : Fragment() {
             when (state) {
                 MuzicState.PLAY -> btnPlayPause.setImageResource(R.drawable.ic_pause)
                 MuzicState.PAUSE -> btnPlayPause.setImageResource(R.drawable.ic_play_arrow)
-                MuzicState.IDLE -> btnPlayPause.setImageResource(R.drawable.ic_play_arrow)
+                MuzicState.STOP -> btnPlayPause.setImageResource(R.drawable.ic_play_arrow)
             }
         })
         viewModel.playingMusic.observe(viewLifecycleOwner, Observer { muzic ->

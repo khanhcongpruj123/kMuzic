@@ -31,6 +31,7 @@ class HomeFragmentViewModel(
 
         _musicState.value = player.getMusicState()
         _playingMusic.value = player.getCurrentMuzic()?.mapToDomainModel()
+        Log.d(TAG, "playing music: ${player.getCurrentMuzic()?.mapToDomainModel()?.name}")
     }
 
     override fun onChanged(state: MuzicState) {
@@ -58,7 +59,7 @@ class HomeFragmentViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        Log.d(TAG, "On Cleared!")
+//        Log.d(TAG, "On Cleared!")
     }
 
     companion object {
