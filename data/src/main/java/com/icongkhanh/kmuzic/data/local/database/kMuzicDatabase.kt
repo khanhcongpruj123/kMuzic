@@ -6,8 +6,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.icongkhanh.kmuzic.data.local.database.dao.kMuzicDao
 import com.icongkhanh.kmuzic.data.local.database.model.MusicDB
+import com.icongkhanh.kmuzic.data.local.database.model.PlaylistAndMusicRef
+import com.icongkhanh.kmuzic.data.local.database.model.PlaylistDB
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-@Database(entities = [MusicDB::class], version = 1, exportSchema = false)
+@Database(
+    entities = [MusicDB::class, PlaylistDB::class, PlaylistAndMusicRef::class],
+    version = 2,
+    exportSchema = false
+)
 abstract class kMuzicDatabase : RoomDatabase() {
 
     abstract fun kMuzicDao(): kMuzicDao
@@ -25,11 +34,22 @@ abstract class kMuzicDatabase : RoomDatabase() {
         }
 
         fun buildDatabase(context: Context): kMuzicDatabase {
-            return Room.databaseBuilder(
+            val db = Room.databaseBuilder(
                 context,
                 kMuzicDatabase::class.java,
                 DATABASE_NAME
             ).build()
+
+            CoroutineScope(Dispatchers.IO).launch {
+                db.kMuzicDao().insertPlaylist(
+                    PlaylistDB(
+                        "8664e1aa-6fc1-4801-b9fd-c4858b92da09",
+                        "NowPlaylist"
+                    )
+                )
+            }
+
+            return db
         }
     }
 }

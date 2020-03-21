@@ -11,6 +11,7 @@ import android.media.MediaPlayer
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.icongkhanh.kmuzic.MainActivity
@@ -35,16 +36,22 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
     val binder = LocalBinder()
 
     val player = MediaPlayer()
-    val nowPlaylist = NowPlaylist()
+    private val nowPlaylist = NowPlaylist()
     var muzicState = MuzicState.IDLE
     val timer = Timer()
     val progressTask = object : TimerTask() {
         override fun run() {
             val progress = getProgress()
-//            Log.d(TAG,"progress: ${progress}")
             handleProgressChanged(progress)
         }
     }
+
+    /**
+     * check seervice is running in foreground
+     * */
+    private var isPlayingForeground = false
+        get
+        private set
 
     private var stateMuzicListener = mutableListOf<OnMuzicStateChangedListener>()
     private var muzicPlayingChangedListener = mutableListOf<OnMuzicPlayingChangedListener>()
@@ -106,14 +113,12 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
     }
 
     fun play() {
-
-        startForeground(1, buildNotification(MuzicState.PLAY))
-
+        Log.d(TAG, "play")
         if (player.isPlaying) player.stop()
         player.reset()
         player.let { p ->
 
-            nowPlaylist.getCurrentMuzic()?.path?.let {
+            getCurrentMusic()?.path?.let {
                 p.setDataSource(it)
                 p.prepare()
                 p.start()
@@ -124,22 +129,23 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
         }
     }
 
-    private fun handleMuzicPlayingChangedListener(currentMuzic: Muzic?) {
+    fun handleMuzicPlayingChangedListener(currentMuzic: Muzic?) {
         muzicPlayingChangedListener.forEach { callback ->
             currentMuzic?.let { callback.onChanged(it) }
         }
     }
 
     private fun handleProgressChanged(progress: Float) {
-//        Log.d(TAG, "handle listener: ${progressChangedListener.size}")
         progressChangedListener.forEach {
             it.onChanged(progress)
         }
     }
 
     fun isExistedMuzic(muzic: Muzic): Boolean {
-        return nowPlaylist.isExistedMuzic(muzic)
+        return nowPlaylist.isExistedMusic(muzic)
     }
+
+    fun getCurrentMusic() = nowPlaylist.getCurrentMuzic()
 
     fun pause() {
         if (player.isPlaying) {
@@ -154,7 +160,6 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
 
         stopForeground(true)
         handleMuzicStateListener(MuzicState.IDLE)
-//        stopSelf()
     }
 
     fun next() {
@@ -169,11 +174,12 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
 
     fun addMusicToPlaylist(muzic: Muzic) {
         nowPlaylist.addMusic(muzic)
+        handleNowPlaylistChanged(nowPlaylist.listMuzic)
     }
 
     fun addMusicToPlaylistAndPlay(muzic: Muzic) {
 
-        if (nowPlaylist.isExistedMuzic(muzic)) {
+        if (nowPlaylist.isExistedMusic(muzic)) {
             val index = nowPlaylist.indexOfMuzic(muzic)
             if (index == nowPlaylist.currentPosition) {
                 if (player.isPlaying) {
@@ -192,18 +198,29 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
         }
     }
 
+    //TODO: fix logic play or pause
     fun playOrPause() {
-        if (player.isPlaying) {
+        if (isPlaying()) {
             player.pause()
             handleMuzicStateListener(MuzicState.PAUSE)
-        } else {
+        } else if (isPause()) {
             if (nowPlaylist.currentPosition == -1) {
                 handleMuzicStateListener(MuzicState.IDLE)
             } else {
-                player.start()
-                handleMuzicStateListener(MuzicState.PLAY)
+                resume()
             }
+        } else {
+            play()
         }
+    }
+
+    private fun resume() {
+        player.start()
+        handleMuzicStateListener(MuzicState.PLAY)
+    }
+
+    fun isPause(): Boolean {
+        return !player.isPlaying() && player.getCurrentPosition() > 1
     }
 
     fun isPlaying(): Boolean {
@@ -336,7 +353,7 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
     override fun onChanged(state: MuzicState) {
         // when service stop, state is idle, notification will be removed, if startForeground, notification will be created, it is fail logic
         if (state == MuzicState.IDLE) return
-        startForeground(1, buildNotification(state))
+        if (isPlayingForeground) startForeground(1, buildNotification(state))
     }
 
     fun addOnNowPlaylistChanged(listeners: List<OnNowPlayListChangedListener>) {
@@ -346,4 +363,27 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
     fun addOnNowPlaylistChanged(listener: OnNowPlayListChangedListener) {
         this.nowPlayListChangedListener.add(listener)
     }
+
+    fun runInForeground() {
+        if (isPlayingForeground) return
+        if (muzicState == MuzicState.IDLE) return
+        startForeground(1, buildNotification(muzicState))
+        isPlayingForeground = true
+    }
+
+    fun stopRunInForeground() {
+        if (!isPlayingForeground) return
+        stopForeground(true)
+        isPlayingForeground = false
+    }
+
+    fun resetNowPlaylist() {
+        if (nowPlaylist.listMuzic.isEmpty()) nowPlaylist.reset()
+        else {
+            nowPlaylist.goToFirst()
+        }
+        handleMuzicPlayingChangedListener(getCurrentMusic())
+    }
+
+    fun getListMusic() = nowPlaylist.listMuzic
 }

@@ -6,8 +6,10 @@ import com.icongkhanh.kmuzic.data.local.memory.MemoryMusicLoader
 import com.icongkhanh.kmuzic.data.repositories.MuzicRepositoryImpl
 import com.icongkhanh.kmuzic.domain.repositories.MuzicRepository
 import com.icongkhanh.kmuzic.domain.usecases.GetMusicByIdUsecase
+import com.icongkhanh.kmuzic.domain.usecases.GetNowPlaylistUsecase
 import com.icongkhanh.kmuzic.domain.usecases.LoadAllMusicUseCase
 import com.icongkhanh.kmuzic.domain.usecases.LoadFavoriteMusicUsecase
+import com.icongkhanh.kmuzic.domain.usecases.SaveNowPlaylistUsecase
 import com.icongkhanh.kmuzic.domain.usecases.ToggleFavoriteMusicUsecase
 import com.icongkhanh.kmuzic.fragments.MusicViewModel
 import com.icongkhanh.kmuzic.fragments.home.HomeFragmentViewModel
@@ -44,7 +46,7 @@ class App : Application() {
                         }
                     },
                     module {
-                        single { MuzicPlayer(this@App) }
+                        single { MuzicPlayer(this@App, get()) }
                     },
                     module {
 
@@ -76,8 +78,10 @@ class App : Application() {
                     module {
                         factory { GetMusicByIdUsecase(get()) }
                         factory { ToggleFavoriteMusicUsecase(get()) }
+                        factory { GetNowPlaylistUsecase(get()) }
+                        factory { SaveNowPlaylistUsecase(get()) }
                         viewModel {
-                            MusicViewModel(get(), get(), get())
+                            MusicViewModel(get(), get(), get(), get(), get())
                         }
                     }
                 )

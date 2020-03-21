@@ -1,6 +1,7 @@
 package com.icongkhanh.kmuzic.domain.repositories
 
 import com.icongkhanh.kmuzic.domain.models.Music
+import com.icongkhanh.kmuzic.domain.models.Playlist
 import kotlinx.coroutines.flow.Flow
 
 interface MuzicRepository {
@@ -13,4 +14,10 @@ interface MuzicRepository {
     suspend fun getMusicById(id: String): Flow<Music>
     suspend fun removeFavorite(muzicId: String)
     suspend fun toggleFavoriteMusic(muzicId: String)
+    suspend fun insertPlaylist(playlist: Playlist)
+    suspend fun saveAllMusicToNowPlaylist(list: List<Music>)
+    suspend fun saveMusicToNowPlaylist(muzicId: String)
+    suspend fun deleteAllNowPlaylist()
+    suspend fun deleteMusicFromNowPlaylist(muzicId: String)
+    suspend fun getNowPlaylist(): List<Music>
 }

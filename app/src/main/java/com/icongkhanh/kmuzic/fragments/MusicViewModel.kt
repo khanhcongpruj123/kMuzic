@@ -1,5 +1,6 @@
 package com.icongkhanh.kmuzic.fragments
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,8 @@ import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.domain.usecases.GetMusicByIdUsecase
+import com.icongkhanh.kmuzic.domain.usecases.GetNowPlaylistUsecase
+import com.icongkhanh.kmuzic.domain.usecases.SaveNowPlaylistUsecase
 import com.icongkhanh.kmuzic.domain.usecases.ToggleFavoriteMusicUsecase
 import com.icongkhanh.kmuzic.playermuzicservice.Muzic
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
@@ -26,6 +29,8 @@ import kotlinx.coroutines.withContext
 class MusicViewModel(
     private val player: MuzicPlayer,
     val getMusicById: GetMusicByIdUsecase,
+    val saveNowPlaylist: SaveNowPlaylistUsecase,
+    val getNowPlaylist: GetNowPlaylistUsecase,
     val toggleFavoriteMusic: ToggleFavoriteMusicUsecase
 ) :
     OnMuzicStateChangedListener,
@@ -60,6 +65,16 @@ class MusicViewModel(
         }
     }
 
+    override fun onChanged(list: List<Muzic>) {
+        Log.d(TAG, "list: ${list.size}")
+        viewModelScope.launch {
+            saveNowPlaylist(list.map { it.mapToDomainModel() })
+            withContext(Dispatchers.Main) {
+                _nowplaylist.value = list.map { it.mapToDomainModel() }
+            }
+        }
+    }
+
     init {
         _progressMusic.value = player.getProgress()
         _playingMusic.value = player.getCurrentMuzic()?.mapToDomainModel()
@@ -74,18 +89,18 @@ class MusicViewModel(
     }
 
     fun onStart() {
-        player.addOnMuzicPlayingChangedListener(this)
-        player.addOnStateChangedListener(this)
-        player.addOnProgressChangedListener(this)
-        player.addOnNowplaylistChangedListener(this)
+        setListener()
     }
 
     fun onStop() {
         player.unsubscribe(this)
     }
 
-    override fun onChanged(list: List<Muzic>) {
-        _nowplaylist.value = list.map { it.mapToDomainModel() }
+    fun setListener() {
+        player.addOnMuzicPlayingChangedListener(this)
+        player.addOnStateChangedListener(this)
+        player.addOnProgressChangedListener(this)
+        player.addOnNowplaylistChangedListener(this)
     }
 
     fun notifyPlayingMusic(music: Music) {
@@ -115,6 +130,10 @@ class MusicViewModel(
 
     fun onPressPrevious() {
         player.previous()
+    }
+
+    companion object {
+        val TAG = "MusicViewModel"
     }
 
 }

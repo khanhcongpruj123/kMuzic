@@ -21,7 +21,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 
 import com.bumptech.glide.GlideBuilder;
-import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.module.AppGlideModule;
 import com.bumptech.glide.request.RequestOptions;
 
@@ -32,8 +31,8 @@ import static com.bumptech.glide.load.DecodeFormat.PREFER_RGB_565;
 /**
  * Glide module configurations
  */
-@GlideModule
-public class PlaidGlideModule extends AppGlideModule {
+@com.bumptech.glide.annotation.GlideModule
+public class kMuzicGlideModule extends AppGlideModule {
 
     @Override
     public void applyOptions(Context context, GlideBuilder builder) {
@@ -51,4 +50,6 @@ public class PlaidGlideModule extends AppGlideModule {
     public boolean isManifestParsingEnabled() {
         return false;
     }
+
+
 }

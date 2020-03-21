@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.viewModelScope
 import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.playermuzicservice.Muzic
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
@@ -12,6 +13,9 @@ import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
 import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicPlayingChangedListener
 import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicStateChangedListener
 import com.icongkhanh.kmuzic.utils.mapToDomainModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeFragmentViewModel(
     private val player: MuzicPlayer
@@ -20,15 +24,13 @@ class HomeFragmentViewModel(
     private val _musicState = MutableLiveData<MuzicState>()
     val muzicState: LiveData<MuzicState> = _musicState.distinctUntilChanged()
 
-    private val _playingMusic = MutableLiveData<Music>()
-    val playingMusic: LiveData<Music> = _playingMusic.distinctUntilChanged()
+    private val _playingMusic = MutableLiveData<Music?>(null)
+    val playingMusic: LiveData<Music?> = _playingMusic.distinctUntilChanged()
 
     init {
 
         _musicState.value = player.getMusicState()
-        player.getCurrentMuzic()?.let {
-            _playingMusic.value = it.mapToDomainModel()
-        }
+        _playingMusic.value = player.getCurrentMuzic()?.mapToDomainModel()
     }
 
     override fun onChanged(state: MuzicState) {
@@ -36,7 +38,9 @@ class HomeFragmentViewModel(
     }
 
     override fun onChanged(muzic: Muzic) {
-        _playingMusic.value = muzic.mapToDomainModel()
+        viewModelScope.launch {
+            withContext(Dispatchers.Main) { _playingMusic.value = muzic.mapToDomainModel() }
+        }
     }
 
     fun playOrPause() {

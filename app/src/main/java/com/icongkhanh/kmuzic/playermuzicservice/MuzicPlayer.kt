@@ -5,20 +5,28 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import android.util.Log
+import com.icongkhanh.kmuzic.domain.usecases.GetNowPlaylistUsecase
+import com.icongkhanh.kmuzic.utils.mapToServiceModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
-class MuzicPlayer(val context: Context) {
+class MuzicPlayer(val context: Context, val getNowPlaylist: GetNowPlaylistUsecase) {
 
     var isBind = false
     var muzicService: MuzicService? = null
+    lateinit var loadNowpLaylistJob: Job
     private val connection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
-//            Log.d("AppLog", "Service connected!")
+            Log.d(TAG, "Service unconnected!")
             muzicService = null
             onUnbind()
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-//            Log.d("AppLog", "Service connected!")
+            Log.d(TAG, "Service connected!")
             val binder = service as MuzicService.LocalBinder
             muzicService = binder.getService()
             onBind()
@@ -37,18 +45,24 @@ class MuzicPlayer(val context: Context) {
     }
 
     fun unbind() {
+        muzicService?.runInForeground()
+        loadNowpLaylistJob.cancel()
         context.unbindService(connection)
     }
 
     fun onBind() {
+        Log.d(TAG, "onBind")
         isBind = true
-//        Log.d("Player", "init")
         muzicService?.let {
             it.addOnStateMuzicChanged(stateMuzicListener)
             it.addOnMuzicPlayingChanged(muzicPlayingListener)
             it.addOnProgressChanged(progressChangedListener)
             it.addOnNowPlaylistChanged(nowPlayListChangedListener)
         }
+
+        muzicService?.stopRunInForeground()
+
+        loadNowPlaylist()
     }
 
     fun onUnbind() {
@@ -94,7 +108,7 @@ class MuzicPlayer(val context: Context) {
         return isBind || muzicService != null
     }
 
-    fun getListMusic() = muzicService?.nowPlaylist?.listMuzic
+    fun getListMusic() = muzicService?.getListMusic()
 
     fun addOnStateChangedListener(listener: OnMuzicStateChangedListener) {
 //        Log.d("Player", "add state listener")
@@ -121,7 +135,7 @@ class MuzicPlayer(val context: Context) {
 
     fun getProgress() = muzicService?.getProgress()
 
-    fun getCurrentMuzic() = muzicService?.nowPlaylist?.getCurrentMuzic()
+    fun getCurrentMuzic() = muzicService?.getCurrentMusic()
 
     fun unsubscribe(any: Any) {
         if (any is OnMuzicPlayingChangedListener) muzicPlayingListener.remove(any)
@@ -132,5 +146,21 @@ class MuzicPlayer(val context: Context) {
 
     fun getMusicState(): MuzicState? {
         return muzicService?.muzicState
+    }
+
+    fun loadNowPlaylist() {
+        loadNowpLaylistJob = CoroutineScope(Dispatchers.IO).launch {
+            val list = getNowPlaylist()
+            Log.d(TAG, "list: $list")
+            list.forEach {
+                Log.d(TAG, "item: ${it.name}")
+                muzicService?.addMusicToPlaylist(it.mapToServiceModel())
+            }
+            muzicService?.resetNowPlaylist()
+        }
+    }
+
+    companion object {
+        val TAG = "MuzicPlayer"
     }
 }

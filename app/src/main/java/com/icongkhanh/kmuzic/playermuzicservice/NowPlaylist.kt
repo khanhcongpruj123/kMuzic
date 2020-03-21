@@ -2,7 +2,9 @@ package com.icongkhanh.kmuzic.playermuzicservice
 
 class NowPlaylist {
 
-    val listMuzic: MutableList<Muzic>
+    var listMuzic: MutableList<Muzic>
+        set
+        get() = field
     var currentPosition: Int
 
     init {
@@ -32,7 +34,7 @@ class NowPlaylist {
         }
     }
 
-    fun isExistedMuzic(muzic: Muzic): Boolean {
+    fun isExistedMusic(muzic: Muzic): Boolean {
         val index = listMuzic.indexOfFirst { it.id == muzic.id }
         return index != -1
     }
@@ -41,19 +43,19 @@ class NowPlaylist {
      *  return index of music have just added
      * */
     fun addMusic(muzic: Muzic): Int {
-        if (isExistedMuzic(muzic)) {
-            return listMuzic.indexOf(muzic)
+        return if (isExistedMusic(muzic)) {
+            indexOfMuzic(muzic)
         } else {
             listMuzic.add(muzic)
-            return listMuzic.indexOf(muzic)
+            listMuzic.indexOf(muzic)
         }
     }
 
     fun addMusicAndPlay(muzic: Muzic): Int {
-        if (!isExistedMuzic(muzic)) {
+        if (!isExistedMusic(muzic)) {
             listMuzic.add(muzic)
         }
-        currentPosition = listMuzic.indexOfFirst { it.id == muzic.id }
+        currentPosition = indexOfMuzic(muzic)
         return currentPosition
     }
 
@@ -63,5 +65,10 @@ class NowPlaylist {
     }
 
     fun reset() {
+        currentPosition = -1
+    }
+
+    fun goToFirst() {
+        currentPosition = 0
     }
 }

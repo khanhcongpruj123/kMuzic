@@ -109,9 +109,15 @@ class HomeFragment : Fragment() {
             }
         })
         viewModel.playingMusic.observe(viewLifecycleOwner, Observer { muzic ->
-            tvMusicName.text = "${muzic.name} \t\t ${muzic.authorName}"
-            Log.d("HomeFragment", "On Music Changed: ${tvMusicName.text}")
-            Glide.with(this).load(BitmapUtils.getBitmapFromMusicFile(muzic.path)).into(imgThumbnail)
+            if (muzic == null) {
+                controllerView.visibility = View.GONE
+            } else {
+                controllerView.visibility = View.VISIBLE
+                tvMusicName.text = "${muzic.name} \t\t ${muzic.authorName}"
+                Log.d("HomeFragment", "On Music Changed: ${tvMusicName.text}")
+                Glide.with(this).load(BitmapUtils.getBitmapFromMusicFile(muzic.path))
+                    .into(imgThumbnail)
+            }
         })
     }
 }

@@ -1,11 +1,13 @@
 package com.icongkhanh.kmuzic.data.repositories
 
 import com.icongkhanh.kmuzic.data.local.database.dao.kMuzicDao
+import com.icongkhanh.kmuzic.data.local.database.model.PlaylistAndMusicRef
 import com.icongkhanh.kmuzic.data.local.memory.MemoryMusicLoader
 import com.icongkhanh.kmuzic.data.prefs.Prefs
 import com.icongkhanh.kmuzic.data.utils.mapToDBModel
 import com.icongkhanh.kmuzic.data.utils.mapToDomainModel
 import com.icongkhanh.kmuzic.domain.models.Music
+import com.icongkhanh.kmuzic.domain.models.Playlist
 import com.icongkhanh.kmuzic.domain.repositories.MuzicRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -73,5 +75,40 @@ class MuzicRepositoryImpl(
                 it.copy(isFavorite = !it.isFavorite)
             }
         withContext(Dispatchers.IO) { musicDao.updateMusic(music) }
+    }
+
+    override suspend fun insertPlaylist(playlist: Playlist) {
+        musicDao.insertPlaylist(playlist.mapToDBModel())
+    }
+
+    override suspend fun saveAllMusicToNowPlaylist(list: List<Music>) {
+        withContext(Dispatchers.IO) {
+            musicDao.deleteAllNowPlaylist()
+            list.forEach {
+                musicDao.insertMusicToPlaylist(
+                    PlaylistAndMusicRef("8664e1aa-6fc1-4801-b9fd-c4858b92da09", it.id)
+                )
+            }
+        }
+    }
+
+    override suspend fun saveMusicToNowPlaylist(muzicId: String) {
+        withContext(Dispatchers.IO) {
+            musicDao.insertMusicToPlaylist(
+                PlaylistAndMusicRef("8664e1aa-6fc1-4801-b9fd-c4858b92da09", muzicId)
+            )
+        }
+    }
+
+    override suspend fun deleteAllNowPlaylist() {
+        withContext(Dispatchers.IO) { musicDao.deleteAllNowPlaylist() }
+    }
+
+    override suspend fun deleteMusicFromNowPlaylist(muzicId: String) {
+        withContext(Dispatchers.IO) { musicDao.deleteMusicFromNowPlaylist(muzicId) }
+    }
+
+    override suspend fun getNowPlaylist(): List<Music> {
+        return musicDao.getNowPlaylist().listMusic.map { it.mapToDomainModel() }
     }
 }
