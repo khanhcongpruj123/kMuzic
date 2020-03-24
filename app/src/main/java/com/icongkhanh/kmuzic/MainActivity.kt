@@ -16,11 +16,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        muzicPlayer.bind()
     }
 
     override fun onResume() {
         super.onResume()
+
+        muzicPlayer.bind()
     }
 
     override fun onStop() {

@@ -1,6 +1,8 @@
 package com.icongkhanh.kmuzic.adapters
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,18 +12,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.icongkhanh.kmuzic.R
+import com.icongkhanh.kmuzic.data.executor.ThreadPoolManager
 import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.utils.BitmapUtils
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAdapter.LocalViewHoder>() {
 
     private val listMusic = mutableListOf<Music>()
     private lateinit var onPressItem: (music: Music) -> Unit
+    private lateinit var onLongPressItem: (music: Music) -> Unit
     private var indexPlaying = -1
     private var oldIndex = indexPlaying
     private var progress = 0f
@@ -48,7 +48,7 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
             this.musicName.text = music.name
 //            this.progressBar.progress = progress * 100
 
-            Log.d(TAG, "Index playing: $position/$indexPlaying")
+//            Log.d(TAG, "Index playing: $position/$indexPlaying")
             if (position == indexPlaying) {
                 this.bgProgressBar.visibility = View.VISIBLE
                 currentMusicPlayingItem = this
@@ -57,10 +57,14 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
             /**
              * async get bitmap from mp3 file
              * */
-            CoroutineScope(Dispatchers.Default).launch {
+//            CoroutineScope(Dispatchers.Default).launch {
+//
+//            }
+            ThreadPoolManager.addTask {
                 Log.d(TAG, "${music.path}")
                 val imgBm = BitmapUtils.getBitmapFromMusicFile(music.path)
-                withContext(Dispatchers.Main) {
+//                Thread.sleep(1000)
+                Handler(Looper.getMainLooper()).post {
                     Glide.with(context)
                         .load(imgBm)
                         .into(this@LocalViewHoder.thumnail)
@@ -68,8 +72,12 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
             }
 
             this.itemView.setOnClickListener {
-                Log.d(TAG, "Clicked: ${music.name}")
                 onPressItem(music)
+            }
+
+            this.itemView.setOnLongClickListener {
+                onLongPressItem(music)
+                true
             }
         }
     }
@@ -113,6 +121,10 @@ class ListMusicAdapter(val context: Context) : RecyclerView.Adapter<ListMusicAda
     fun updateProgress(progress: Float? = 0f) {
         this.progress = progress ?: 0f
         currentMusicPlayingItem?.progressBar?.progress = this.progress * 100
+    }
+
+    fun setOnLongPressItem(callback: (music: Music) -> Unit) {
+        onLongPressItem = callback
     }
 
     companion object {

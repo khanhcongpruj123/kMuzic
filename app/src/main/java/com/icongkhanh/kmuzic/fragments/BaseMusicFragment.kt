@@ -38,7 +38,11 @@ abstract class BaseMusicFragment : Fragment() {
 
         adapter.setOnPressItem {
             musicVM.play(it)
-            onMusicItemClicked()
+            onMusicItemClicked(it)
+        }
+
+        adapter.setOnLongPressItem {
+            onMusicItemLongClicked(it)
         }
 
         listMusic.adapter = adapter
@@ -82,27 +86,31 @@ abstract class BaseMusicFragment : Fragment() {
         })
     }
 
-    protected fun onListMusicChanged() {
-        //Nothing waite u override
+    protected open fun onListMusicChanged() {
+        //Nothing wait u override
     }
 
-    protected fun onMusicItemClicked() {
-
-    }  //Nothing waite u override
-
-    protected fun onPlayingMusicChanged() {
-        //Nothing waite u override
+    protected open fun onMusicItemLongClicked(it: Music) {
+        //Nothing wait u override
     }
 
-    protected fun onProgressChanged() {
-        //Nothing waite u override
+    protected open fun onMusicItemClicked(it: Music) {
+
+    }  //Nothing wait u override
+
+    protected open fun onPlayingMusicChanged() {
+        //Nothing wait u override
     }
 
-    protected fun onStateMusicChanged() {
-        //Nothing waite u override
+    protected open fun onProgressChanged() {
+        //Nothing wait u override
     }
 
-    protected fun updateListMusic(list: List<Music>) {
+    protected open fun onStateMusicChanged() {
+        //Nothing wait u override
+    }
+
+    protected open fun updateListMusic(list: List<Music>) {
         adapter.updateListMusic(list)
     }
 

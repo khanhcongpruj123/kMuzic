@@ -35,7 +35,8 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
     private val CHANNEL_ID: String = "kMuzic Service"
     val binder = LocalBinder()
 
-    val player = MediaPlayer()
+    var currentPlayer = MediaPlayer()
+    val nextPlayer = MediaPlayer()
     private val nowPlaylist = NowPlaylist()
 
     /**
@@ -53,12 +54,7 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
      * */
     val timer = Timer()
 
-    val progressTask = object : TimerTask() {
-        override fun run() {
-            val progress = getProgress()
-            handleProgressChanged(progress)
-        }
-    }
+    lateinit var progressTask: TimerTask
 
     /**
      * check service is running in foreground
@@ -82,8 +78,6 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
 
     override fun onCreate() {
         super.onCreate()
-
-        timer.schedule(progressTask, 0, 500)
 
         muzicState = MuzicState.STOP
 
@@ -129,19 +123,22 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
 
     fun play() {
 
-        if (player.isPlaying) player.stop()
-        player.reset()
-        player.let { p ->
-
+        synchronized(currentPlayer) {
+            currentPlayer.reset()
             getCurrentMusic()?.path?.let {
-                p.setDataSource(it)
-                p.prepare()
-                p.start()
+
+                currentPlayer.setDataSource(getCurrentMusic()?.path)
+                currentPlayer.prepare()
+                currentPlayer.start()
 
                 muzicState = MuzicState.PLAY
-                handleMuzicPlayingChangedListener(nowPlaylist.getCurrentMuzic())
 
-                player.setOnCompletionListener {
+                progressTask = GetMusicProgressTask()
+
+                timer.schedule(progressTask, 0, 500)
+
+                handleMuzicPlayingChangedListener(getCurrentMusic())
+                currentPlayer.setOnCompletionListener {
                     next()
                 }
             }
@@ -167,15 +164,15 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
     fun getCurrentMusic() = nowPlaylist.getCurrentMuzic()
 
     fun pause() {
-        if (player.isPlaying) {
-            player.pause()
+        if (currentPlayer.isPlaying) {
+            currentPlayer.pause()
             muzicState = MuzicState.PAUSE
         }
     }
 
     fun stop() {
-        player.stop()
-        timer.cancel()
+        currentPlayer.stop()
+        progressTask.cancel()
 
         stopForeground(true)
         muzicState = MuzicState.STOP
@@ -230,7 +227,7 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
     }
 
     private fun resume() {
-        player.start()
+        currentPlayer.start()
         muzicState = MuzicState.PLAY
     }
 
@@ -365,7 +362,7 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
     }
 
     fun getProgress(): Float {
-        return player.currentPosition.toFloat() / player.duration
+        return currentPlayer.currentPosition.toFloat() / currentPlayer.duration
     }
 
     override fun onChanged(state: MuzicState) {
@@ -406,4 +403,13 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
     }
 
     fun getListMusic() = nowPlaylist.listMuzic
+
+    private inner class GetMusicProgressTask : TimerTask() {
+
+        override fun run() {
+            val progress = getProgress()
+            handleProgressChanged(progress)
+        }
+
+    }
 }

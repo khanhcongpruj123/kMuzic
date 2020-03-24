@@ -35,7 +35,7 @@ class HomeFragmentViewModel(
     }
 
     override fun onChanged(state: MuzicState) {
-        _musicState.value = state
+        viewModelScope.launch(Dispatchers.Main) { _musicState.value = state }
     }
 
     override fun onChanged(muzic: Muzic) {

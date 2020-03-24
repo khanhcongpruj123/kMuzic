@@ -5,12 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.icongkhanh.kmuzic.R
 import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.fragments.BaseMusicFragment
@@ -24,8 +27,11 @@ class AllMusicFragment : BaseMusicFragment() {
 
     lateinit var listMusicView: RecyclerView
     lateinit var loadingView: View
+    lateinit var bottomsheet: LinearLayout
+    lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
     val viewModel: AllMusicFragmentViewModel by viewModel()
+    val viewEvent = MutableLiveData<AllMusicContract.AllMusicViewEvent>()
 
     companion object {
         val TAG = "AllMusicFragment"
@@ -47,6 +53,12 @@ class AllMusicFragment : BaseMusicFragment() {
 
         listMusicView = view.findViewById(R.id.list_music)
         loadingView = view.findViewById(R.id.loading_view)
+        bottomsheet = view.findViewById(R.id.menu)
+
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomsheet)
+        bottomSheetBehavior.peekHeight = 100
+        bottomSheetBehavior.isHideable = true
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         return view
     }
@@ -63,6 +75,14 @@ class AllMusicFragment : BaseMusicFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         subscribeUi()
+    }
+
+    override fun onMusicItemClicked(it: Music) {
+        viewEvent.postValue(AllMusicContract.AllMusicViewEvent.ClickItemMusic(it))
+    }
+
+    override fun onMusicItemLongClicked(it: Music) {
+        viewEvent.postValue(AllMusicContract.AllMusicViewEvent.LongClickItemMusic(it))
     }
 
     /**
@@ -91,6 +111,18 @@ class AllMusicFragment : BaseMusicFragment() {
     private fun subscribeUi() {
         viewModel.viewState.observe(viewLifecycleOwner, Observer { state ->
             renderUi(state)
+        })
+        viewEvent.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is AllMusicContract.AllMusicViewEvent.ClickItemMusic -> {
+
+                }
+                is AllMusicContract.AllMusicViewEvent.LongClickItemMusic -> {
+                    if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) bottomSheetBehavior.state =
+                        BottomSheetBehavior.STATE_EXPANDED
+                    else bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+            }
         })
     }
 

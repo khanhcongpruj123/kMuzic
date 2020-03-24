@@ -71,4 +71,15 @@ class NowPlaylist {
     fun goToFirst() {
         currentPosition = 0
     }
+
+    fun getNextMusic(): Muzic? {
+        var position = 0
+        if (currentPosition == listMuzic.size - 1) {
+            position = 0
+        } else {
+            position = currentPosition + 1
+        }
+
+        return listMuzic[position]
+    }
 }

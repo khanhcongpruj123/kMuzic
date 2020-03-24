@@ -52,7 +52,9 @@ class MusicViewModel(
     val nowplaylist: LiveData<List<Music>> = _nowplaylist.distinctUntilChanged()
 
     override fun onChanged(state: MuzicState) {
-        _stateMusic.value = state
+        viewModelScope.launch {
+            withContext(Dispatchers.Main) { _stateMusic.value = state }
+        }
     }
 
     override fun onChanged(muzic: Muzic) {
@@ -85,7 +87,9 @@ class MusicViewModel(
     }
 
     fun play(it: Music) {
-        player.play(it.mapToServiceModel())
+        viewModelScope.launch(Dispatchers.Default) {
+            player.play(it.mapToServiceModel())
+        }
     }
 
     fun onStart() {
@@ -121,15 +125,21 @@ class MusicViewModel(
     }
 
     fun onPressPlayOrPause() {
-        player.playOrPause()
+        viewModelScope.launch(Dispatchers.Default) {
+            player.playOrPause()
+        }
     }
 
     fun onPressNext() {
-        player.next()
+        viewModelScope.launch(Dispatchers.Default) {
+            player.next()
+        }
     }
 
     fun onPressPrevious() {
-        player.previous()
+        viewModelScope.launch(Dispatchers.Default) {
+            player.previous()
+        }
     }
 
     companion object {

@@ -10,12 +10,18 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.transition.MaterialContainerTransform
 import com.icongkhanh.kmuzic.R
 import com.icongkhanh.kmuzic.fragments.MusicViewModel
+import com.icongkhanh.kmuzic.fragments.nowplaylist.NowPlaylistContract.NowPlaylistViewEvent.Back
+import com.icongkhanh.kmuzic.fragments.nowplaylist.NowPlaylistContract.NowPlaylistViewEvent.Next
+import com.icongkhanh.kmuzic.fragments.nowplaylist.NowPlaylistContract.NowPlaylistViewEvent.PlayOrPause
+import com.icongkhanh.kmuzic.fragments.nowplaylist.NowPlaylistContract.NowPlaylistViewEvent.Previous
+import com.icongkhanh.kmuzic.fragments.nowplaylist.NowPlaylistContract.NowPlaylistViewEvent.ToggleFavorite
 import com.icongkhanh.kmuzic.fragments.nowplaylist.nowplaylistviewpager.PlaylistFragment
 import com.icongkhanh.kmuzic.fragments.nowplaylist.nowplaylistviewpager.ThumbnailFragment
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
@@ -41,8 +47,9 @@ class NowPlaylistFragment : Fragment() {
     lateinit var tvMusicName: TextView
     lateinit var tvAuthorName: TextView
     lateinit var btnBack: ImageButton
-
     lateinit var btnLike: ImageButton
+
+    private val viewEvent = MutableLiveData<NowPlaylistContract.NowPlaylistViewEvent>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,23 +82,23 @@ class NowPlaylistFragment : Fragment() {
         btnLike = view.findViewById(R.id.btn_like)
 
         btnPlayOrPause.setOnClickListener {
-            viewmodel.onPressPlayOrPause()
+            viewEvent.postValue(PlayOrPause)
         }
 
         btnNext.setOnClickListener {
-            viewmodel.onPressNext()
+            viewEvent.postValue(Next)
         }
 
         btnPrevious.setOnClickListener {
-            viewmodel.onPressPrevious()
+            viewEvent.postValue(Previous)
         }
 
         btnBack.setOnClickListener {
-            findNavController().navigateUp()
+            viewEvent.postValue(Back)
         }
 
         btnLike.setOnClickListener {
-            viewmodel.toggleFavoriteMusic()
+            viewEvent.postValue(ToggleFavorite)
         }
 
         // init adapter pager and transformer
@@ -129,7 +136,7 @@ class NowPlaylistFragment : Fragment() {
             }
         })
         viewmodel.progressMusic.observe(viewLifecycleOwner, Observer {
-            seekBar.progress = (it * 100).toInt()
+            it?.let { seekBar.progress = (it * 100).toInt() }
         })
 
         viewmodel.playingMusic.observe(viewLifecycleOwner, Observer { currMusic ->
@@ -146,10 +153,19 @@ class NowPlaylistFragment : Fragment() {
                 btnLike.setImageResource(resId)
             }
         })
+
+        viewEvent.observe(viewLifecycleOwner, Observer { it ->
+            when (it) {
+                is Next -> viewmodel.onPressNext()
+                is Previous -> viewmodel.onPressPrevious()
+                is PlayOrPause -> viewmodel.onPressPlayOrPause()
+                is ToggleFavorite -> viewmodel.toggleFavoriteMusic()
+                is Back -> findNavController().navigateUp()
+            }
+        })
     }
 
     override fun onStop() {
-//        viewmodel.onStop()
         super.onStop()
     }
 }
