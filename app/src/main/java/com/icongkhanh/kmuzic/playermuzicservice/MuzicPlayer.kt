@@ -6,11 +6,15 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
+import com.icongkhanh.kmuzic.domain.Result
+import com.icongkhanh.kmuzic.domain.isSuccess
 import com.icongkhanh.kmuzic.domain.usecases.GetNowPlaylistUsecase
 import com.icongkhanh.kmuzic.utils.mapToServiceModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class MuzicPlayer(val context: Context, val getNowPlaylist: GetNowPlaylistUsecase) {
@@ -190,11 +194,17 @@ class MuzicPlayer(val context: Context, val getNowPlaylist: GetNowPlaylistUsecas
 
     fun loadNowPlaylist() {
         loadNowpLaylistJob = CoroutineScope(Dispatchers.IO).launch {
-            val list = getNowPlaylist()
-            Log.d(TAG, "list: $list")
+            var list: List<Muzic> = emptyList()
+            getNowPlaylist().onEach { result ->
+//                Log.d(TAG, result.toString())
+                when (result) {
+                    is Result.Success -> {
+                        if (result.isSuccess()) list = result.data.map { it.mapToServiceModel() }
+                    }
+                }
+            }.collect()
             list.forEach {
-                Log.d(TAG, "item: ${it.name}")
-                muzicService?.addMusicToPlaylist(it.mapToServiceModel())
+                muzicService?.addMusicToPlaylist(it)
             }
             muzicService?.initNowPlaylist()
         }

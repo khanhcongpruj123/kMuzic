@@ -5,32 +5,29 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.LinearLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
-import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
-import com.google.android.material.tabs.TabLayout
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.transition.Hold
 import com.icongkhanh.kmuzic.R
 import com.icongkhanh.kmuzic.adapters.HomeViewPagerAdapter
+import com.icongkhanh.kmuzic.databinding.FragmentHomeBinding
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicState
 import com.icongkhanh.kmuzic.utils.BitmapUtils
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment() {
 
-    lateinit var tabLayout: TabLayout
-    lateinit var viewPager: ViewPager
+    lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     lateinit var viewpagerAdapter: HomeViewPagerAdapter
-    lateinit var imgThumbnail: ImageView
-    lateinit var btnPlayPause: ImageButton
-    lateinit var controllerView: View
-    lateinit var tvMusicName: TextView
+
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
 
     val viewModel by viewModel<HomeFragmentViewModel>()
 
@@ -45,39 +42,42 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
-
-        return view
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tabLayout = view.findViewById(R.id.tab_bar)
-        viewPager = view.findViewById(R.id.viewpager)
-        btnPlayPause = view.findViewById(R.id.btn_play_or_pause)
-        controllerView = view.findViewById(R.id.controller)
-        tvMusicName = view.findViewById(R.id.music_name)
-        imgThumbnail = view.findViewById(R.id.controller_thumnail)
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.menu)
+        bottomSheetBehavior.peekHeight = 100
+        bottomSheetBehavior.isHideable = true
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         // setup view
-        tabLayout.setupWithViewPager(viewPager)
+        binding.tabBar.setupWithViewPager(binding.viewpager)
         viewpagerAdapter = HomeViewPagerAdapter(childFragmentManager)
-        viewPager.adapter = viewpagerAdapter
-        tvMusicName.isSelected = true
+        binding.viewpager.adapter = viewpagerAdapter
+        binding.musicName.isSelected = true
 
         // setup event
 
-        controllerView.setOnClickListener {
+        binding.controller.setOnClickListener {
             goToNowPlaylistFragment()
         }
 
-        btnPlayPause.setOnClickListener {
+        binding.btnPlayOrPause.setOnClickListener {
             viewModel.playOrPause()
         }
 
         subscribeUi()
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object :
+            OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+
+            }
+        })
     }
 
     override fun onStart() {
@@ -90,8 +90,13 @@ class HomeFragment : Fragment() {
         viewModel.onStop()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
     private fun goToNowPlaylistFragment() {
-        val extras = FragmentNavigatorExtras(controllerView to "shared_element_container")
+        val extras = FragmentNavigatorExtras(binding.controller to "shared_element_container")
         findNavController().navigate(
             R.id.action_homeFragment_to_nowPlaylistFragment,
             null,
@@ -101,23 +106,32 @@ class HomeFragment : Fragment() {
     }
 
     fun subscribeUi() {
+
         viewModel.muzicState.observe(viewLifecycleOwner, Observer { state ->
             when (state) {
-                MuzicState.PLAY -> btnPlayPause.setImageResource(R.drawable.ic_pause)
-                MuzicState.PAUSE -> btnPlayPause.setImageResource(R.drawable.ic_play_arrow)
-                MuzicState.STOP -> btnPlayPause.setImageResource(R.drawable.ic_play_arrow)
+                MuzicState.PLAY -> binding.btnPlayOrPause.setImageResource(R.drawable.ic_pause)
+                MuzicState.PAUSE -> binding.btnPlayOrPause.setImageResource(R.drawable.ic_play_arrow)
+                MuzicState.STOP -> binding.btnPlayOrPause.setImageResource(R.drawable.ic_play_arrow)
             }
         })
         viewModel.playingMusic.observe(viewLifecycleOwner, Observer { muzic ->
             if (muzic == null) {
-                controllerView.visibility = View.GONE
+                binding.controller.visibility = View.GONE
             } else {
-                controllerView.visibility = View.VISIBLE
-                tvMusicName.text = "${muzic.name} \t\t ${muzic.authorName}"
-                Log.d("HomeFragment", "On Music Changed: ${tvMusicName.text}")
+                binding.controller.visibility = View.VISIBLE
+                binding.musicName.text = "${muzic.name} \t\t ${muzic.authorName}"
+                Log.d("HomeFragment", "On Music Changed: ${binding.musicName.text}")
                 Glide.with(this).load(BitmapUtils.getBitmapFromMusicFile(muzic.path))
-                    .into(imgThumbnail)
+                    .into(binding.controllerThumnail)
             }
         })
+    }
+
+    fun showBottomMenu() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
+    fun hideBottomMenu() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 }

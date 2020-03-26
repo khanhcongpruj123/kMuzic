@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.icongkhanh.kmuzic.adapters.ListMusicAdapter
 import com.icongkhanh.kmuzic.domain.models.Music
+import com.icongkhanh.kmuzic.uimodels.ListMusicUiModel
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 abstract class BaseMusicFragment : Fragment() {
@@ -22,7 +23,7 @@ abstract class BaseMusicFragment : Fragment() {
 
     abstract fun getLayoutManager(): RecyclerView.LayoutManager
 
-    abstract fun getListMusic(): LiveData<List<Music>>
+    abstract fun getListMusic(): LiveData<ListMusicUiModel>
 
     override fun onStart() {
         super.onStart()
@@ -60,7 +61,7 @@ abstract class BaseMusicFragment : Fragment() {
 
         getListMusic().observe(viewLifecycleOwner, Observer {
             it?.let {
-                adapter.updateListMusic(it)
+                adapter.updateListMusic(it.list)
                 onListMusicChanged()
             }
         })

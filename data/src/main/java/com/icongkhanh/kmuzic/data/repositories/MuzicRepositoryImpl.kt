@@ -6,6 +6,7 @@ import com.icongkhanh.kmuzic.data.local.memory.MemoryMusicLoader
 import com.icongkhanh.kmuzic.data.prefs.Prefs
 import com.icongkhanh.kmuzic.data.utils.mapToDBModel
 import com.icongkhanh.kmuzic.data.utils.mapToDomainModel
+import com.icongkhanh.kmuzic.domain.Result
 import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.domain.models.Playlist
 import com.icongkhanh.kmuzic.domain.repositories.MuzicRepository
@@ -23,8 +24,9 @@ class MuzicRepositoryImpl(
 ) :
     MuzicRepository {
 
-    override suspend fun loadAllMuzic(foreUpdate: Boolean): Flow<List<Music>> =
+    override suspend fun loadAllMuzic(foreUpdate: Boolean): Flow<Result<List<Music>>> =
         flow {
+            emit(Result.Loading)
             val isFistTimeOpenApp = prefs.isFirstTimeOpenApp()
             if (foreUpdate || isFistTimeOpenApp) {
                 val listMusic = withContext(Dispatchers.IO) { memoryMusicLoader.getAllMusic() }
@@ -33,19 +35,24 @@ class MuzicRepositoryImpl(
                 }
                 prefs.setIsFirstTimeOpenApp(false)
             }
+            val res = withContext(Dispatchers.IO) { musicDao.getAllMusic() }
             emitAll(
-                withContext(Dispatchers.IO) { musicDao.getAllMusic() }
-                    .map { list -> list.map { it.mapToDomainModel() } }
+                res.map { list ->
+                    Result.Success(list.map { it.mapToDomainModel() })
+                }
             )
         }
 
-    override suspend fun loadMusicInPlaylist(playlistId: String): Flow<List<Music>> = flow {
+    override suspend fun loadMusicInPlaylist(playlistId: String): Flow<Result<List<Music>>> = flow {
 
     }
 
-    override suspend fun loadFavoriteMuzic(): Flow<List<Music>> = flow {
+    override suspend fun loadFavoriteMuzic(): Flow<Result<List<Music>>> = flow {
+        emit(Result.Loading)
         val res = withContext(Dispatchers.IO) { musicDao.getFavoriteMusic() }
-        emitAll(res.map { list -> list.map { it.mapToDomainModel() } })
+        emitAll(res.map { list ->
+            Result.Success(list.map { it.mapToDomainModel() })
+        })
     }
 
     override suspend fun addToFavorite(muzicId: String) {
@@ -58,9 +65,11 @@ class MuzicRepositoryImpl(
 
     }
 
-    override suspend fun getMusicById(id: String): Flow<Music> =
+    override suspend fun getMusicById(id: String): Flow<Result<Music>> =
         flow {
-            emit(withContext(Dispatchers.IO) { musicDao.getMusicById(id) }.mapToDomainModel())
+            emit(Result.Loading)
+            val res = withContext(Dispatchers.IO) { musicDao.getMusicById(id) }
+            emit(Result.Success(res.mapToDomainModel()))
         }
 
     override suspend fun removeFavorite(muzicId: String) {
@@ -108,7 +117,9 @@ class MuzicRepositoryImpl(
         withContext(Dispatchers.IO) { musicDao.deleteMusicFromNowPlaylist(muzicId) }
     }
 
-    override suspend fun getNowPlaylist(): List<Music> {
-        return musicDao.getNowPlaylist().listMusic.map { it.mapToDomainModel() }
+    override suspend fun getNowPlaylist(): Flow<Result<List<Music>>> = flow {
+        emit(Result.Loading)
+        val res = musicDao.getNowPlaylist().listMusic.map { it.mapToDomainModel() }
+        emit(Result.Success(res))
     }
 }

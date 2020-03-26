@@ -2,21 +2,20 @@ package com.icongkhanh.kmuzic.fragments.home.homeviewpager.allmusic
 
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.icongkhanh.kmuzic.R
+import com.icongkhanh.kmuzic.databinding.FragmentAllMusicBinding
 import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.fragments.BaseMusicFragment
+import com.icongkhanh.kmuzic.uimodels.ListMusicUiModel
 import com.icongkhanh.kmuzic.utils.PermissionUtils.checkReadPermission
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -25,13 +24,12 @@ import org.koin.android.viewmodel.ext.android.viewModel
  */
 class AllMusicFragment : BaseMusicFragment() {
 
-    lateinit var listMusicView: RecyclerView
-    lateinit var loadingView: View
-    lateinit var bottomsheet: LinearLayout
-    lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private var _binding: FragmentAllMusicBinding? = null
+    private val binding get() = _binding!!
+
+    val viewEvent = MutableLiveData<AllMusicContract.AllMusicViewEvent>()
 
     val viewModel: AllMusicFragmentViewModel by viewModel()
-    val viewEvent = MutableLiveData<AllMusicContract.AllMusicViewEvent>()
 
     companion object {
         val TAG = "AllMusicFragment"
@@ -49,26 +47,16 @@ class AllMusicFragment : BaseMusicFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_all_music, container, false)
-
-        listMusicView = view.findViewById(R.id.list_music)
-        loadingView = view.findViewById(R.id.loading_view)
-        bottomsheet = view.findViewById(R.id.menu)
-
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomsheet)
-        bottomSheetBehavior.peekHeight = 100
-        bottomSheetBehavior.isHideable = true
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-
-        return view
+        _binding = FragmentAllMusicBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    override fun getMusicRecyclerView(): RecyclerView = listMusicView
+    override fun getMusicRecyclerView(): RecyclerView = binding.listMusic
 
     override fun getLayoutManager(): RecyclerView.LayoutManager =
         LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
 
-    override fun getListMusic(): LiveData<List<Music>> = viewModel.viewState.map { it.music }
+    override fun getListMusic(): LiveData<ListMusicUiModel> = viewModel.listMusic
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -109,7 +97,7 @@ class AllMusicFragment : BaseMusicFragment() {
      *  subscribe viewmodel's data
      * */
     private fun subscribeUi() {
-        viewModel.viewState.observe(viewLifecycleOwner, Observer { state ->
+        viewModel.listMusic.observe(viewLifecycleOwner, Observer { state ->
             renderUi(state)
         })
         viewEvent.observe(viewLifecycleOwner, Observer {
@@ -118,17 +106,15 @@ class AllMusicFragment : BaseMusicFragment() {
 
                 }
                 is AllMusicContract.AllMusicViewEvent.LongClickItemMusic -> {
-                    if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) bottomSheetBehavior.state =
-                        BottomSheetBehavior.STATE_EXPANDED
-                    else bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    Log.d(TAG, "Long Clicked!")
                 }
             }
         })
     }
 
-    private fun renderUi(state: AllMusicContract.ViewState) {
+    private fun renderUi(listMusicUiModel: ListMusicUiModel) {
         // hide or show loading view
-        if (state.isLoading) loadingView.visibility = View.VISIBLE
-        else loadingView.visibility = View.INVISIBLE
+        if (listMusicUiModel.isLoading) binding.loadingView.visibility = View.VISIBLE
+        else binding.loadingView.visibility = View.INVISIBLE
     }
 }

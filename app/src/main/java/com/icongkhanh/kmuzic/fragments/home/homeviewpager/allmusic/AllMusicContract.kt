@@ -20,5 +20,7 @@ interface AllMusicContract {
     sealed class AllMusicViewEvent {
         data class ClickItemMusic(val music: Music) : AllMusicViewEvent()
         data class LongClickItemMusic(val music: Music) : AllMusicViewEvent()
+        object DismissBottomMenu : AllMusicViewEvent()
+        object Back : AllMusicViewEvent()
     }
 }

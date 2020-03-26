@@ -123,6 +123,7 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
 
     fun play() {
 
+        //prevent from multi access to media player
         synchronized(currentPlayer) {
             currentPlayer.reset()
             getCurrentMusic()?.path?.let {

@@ -7,42 +7,37 @@ import android.view.ViewGroup
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.icongkhanh.kmuzic.R
-import com.icongkhanh.kmuzic.domain.models.Music
+import com.icongkhanh.kmuzic.databinding.FragmentFavoriteMusicBinding
 import com.icongkhanh.kmuzic.fragments.BaseMusicFragment
+import com.icongkhanh.kmuzic.uimodels.ListMusicUiModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class FavoriteMusicFragment : BaseMusicFragment() {
 
-    lateinit var listMusic: RecyclerView
+    private var _binding: FragmentFavoriteMusicBinding? = null
+    private val binding get() = _binding!!
 
     val vm: FavoriteMusicViewModel by viewModel()
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_favorite_music, container, false)
-
-        listMusic = view.findViewById(R.id.list_music)
-
-        return view
+        _binding = FragmentFavoriteMusicBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
     }
 
-    override fun getMusicRecyclerView(): RecyclerView = listMusic
+    override fun getMusicRecyclerView(): RecyclerView = binding.listMusic
 
     override fun getLayoutManager(): RecyclerView.LayoutManager =
         LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
 
-    override fun getListMusic(): LiveData<List<Music>> = vm.listMusic
+    override fun getListMusic(): LiveData<ListMusicUiModel> = vm.listMusic
 
 
     private fun subscribeUi() {

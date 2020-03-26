@@ -5,9 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
+import com.icongkhanh.kmuzic.domain.Result
+import com.icongkhanh.kmuzic.domain.isSuccess
 import com.icongkhanh.kmuzic.domain.usecases.LoadAllMusicUseCase
+import com.icongkhanh.kmuzic.uimodels.ListMusicUiModel
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -17,13 +19,13 @@ class AllMusicFragmentViewModel(
     private val isGrantedReadPermission: Boolean
 ) : ViewModel() {
 
-    private val initialState = AllMusicContract.ViewState.initial()
+    private val initialState = ListMusicUiModel()
 
-    private val _viewState = MutableLiveData<AllMusicContract.ViewState>().apply {
+    private val _listMusic = MutableLiveData<ListMusicUiModel>().apply {
         value = initialState
     }
 
-    val viewState: LiveData<AllMusicContract.ViewState> = _viewState.distinctUntilChanged()
+    val listMusic: LiveData<ListMusicUiModel> = _listMusic.distinctUntilChanged()
 
     init {
 
@@ -38,19 +40,16 @@ class AllMusicFragmentViewModel(
     fun _loadAllMusic() {
         viewModelScope.launch {
             loadAllMusic(false).onStart {
-                _viewState.value = AllMusicContract.ViewState(
-                    music = emptyList(),
-                    isLoading = true,
-                    error = null
-                )
-            }.onEach {
-                _viewState.value = AllMusicContract.ViewState(
-                    music = it,
-                    isLoading = false,
-                    error = null
-                )
-            }.onCompletion {
-                _viewState.value = _viewState.value!!.copy(isLoading = false)
+
+            }.onEach { result ->
+                when (result) {
+                    is Result.Success -> if (result.isSuccess()) {
+                        _listMusic.value = ListMusicUiModel(list = result.data, isLoading = false)
+                    }
+                    is Result.Loading -> {
+                        _listMusic.value = ListMusicUiModel(isLoading = true)
+                    }
+                }
             }.collect()
         }
     }

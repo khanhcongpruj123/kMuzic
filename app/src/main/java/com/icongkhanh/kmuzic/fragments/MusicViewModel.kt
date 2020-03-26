@@ -1,11 +1,12 @@
 package com.icongkhanh.kmuzic.fragments
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
+import com.icongkhanh.kmuzic.domain.Result
+import com.icongkhanh.kmuzic.domain.isSuccess
 import com.icongkhanh.kmuzic.domain.models.Music
 import com.icongkhanh.kmuzic.domain.usecases.GetMusicByIdUsecase
 import com.icongkhanh.kmuzic.domain.usecases.GetNowPlaylistUsecase
@@ -18,6 +19,7 @@ import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicPlayingChangedListener
 import com.icongkhanh.kmuzic.playermuzicservice.OnMuzicStateChangedListener
 import com.icongkhanh.kmuzic.playermuzicservice.OnNowPlayListChangedListener
 import com.icongkhanh.kmuzic.playermuzicservice.OnProgressChangedListener
+import com.icongkhanh.kmuzic.uimodels.ListMusicUiModel
 import com.icongkhanh.kmuzic.utils.mapToDomainModel
 import com.icongkhanh.kmuzic.utils.mapToServiceModel
 import kotlinx.coroutines.Dispatchers
@@ -48,8 +50,8 @@ class MusicViewModel(
     private val _playingMusic = MutableLiveData<Music>()
     val playingMusic: LiveData<Music> = _playingMusic.distinctUntilChanged()
 
-    private val _nowplaylist = MutableLiveData<List<Music>>()
-    val nowplaylist: LiveData<List<Music>> = _nowplaylist.distinctUntilChanged()
+    private val _nowplaylist = MutableLiveData<ListMusicUiModel>()
+    val nowplaylist: LiveData<ListMusicUiModel> = _nowplaylist.distinctUntilChanged()
 
     override fun onChanged(state: MuzicState) {
         viewModelScope.launch {
@@ -68,11 +70,12 @@ class MusicViewModel(
     }
 
     override fun onChanged(list: List<Muzic>) {
-        Log.d(TAG, "list: ${list.size}")
         viewModelScope.launch {
             saveNowPlaylist(list.map { it.mapToDomainModel() })
             withContext(Dispatchers.Main) {
-                _nowplaylist.value = list.map { it.mapToDomainModel() }
+                _nowplaylist.value = ListMusicUiModel(
+                    list = list.map { it.mapToDomainModel() }
+                )
             }
         }
     }
@@ -81,7 +84,9 @@ class MusicViewModel(
         _progressMusic.value = player.getProgress()
         _playingMusic.value = player.getCurrentMuzic()?.mapToDomainModel()
         _stateMusic.value = player.getMusicState()
-        _nowplaylist.value = player.getListMusic()?.map { it.mapToDomainModel() }
+        _nowplaylist.value = ListMusicUiModel(
+            list = player.getListMusic()?.map { it.mapToDomainModel() } ?: emptyList()
+        )
 
         onStart()
     }
@@ -110,9 +115,14 @@ class MusicViewModel(
     fun notifyPlayingMusic(music: Music) {
         viewModelScope.launch {
             getMusicById(music.id).onEach {
-                withContext(Dispatchers.Main) { _playingMusic.value = it }
+                when (it) {
+                    is Result.Success -> withContext(Dispatchers.Main) {
+                        if (it.isSuccess()) _playingMusic.value = it.data
+                    }
+                }
             }.collect()
         }
+
     }
 
     fun toggleFavoriteMusic() {
