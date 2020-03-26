@@ -1,6 +1,8 @@
 package com.icongkhanh.kmuzic
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.icongkhanh.kmuzic.fragments.MusicViewModel
 import com.icongkhanh.kmuzic.playermuzicservice.MuzicPlayer
@@ -15,6 +17,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        when {
+            intent?.action == Intent.ACTION_VIEW -> {
+                Log.d("AppLog", "${intent.data}")
+            }
+        }
 
     }
 

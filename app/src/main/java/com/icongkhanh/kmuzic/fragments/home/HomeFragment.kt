@@ -5,14 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.transition.Hold
 import com.icongkhanh.kmuzic.R
 import com.icongkhanh.kmuzic.adapters.HomeViewPagerAdapter
@@ -23,7 +20,6 @@ import org.koin.android.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment() {
 
-    lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     lateinit var viewpagerAdapter: HomeViewPagerAdapter
 
     private var _binding: FragmentHomeBinding? = null
@@ -49,11 +45,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bottomSheetBehavior = BottomSheetBehavior.from(binding.menu)
-        bottomSheetBehavior.peekHeight = 100
-        bottomSheetBehavior.isHideable = true
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-
         // setup view
         binding.tabBar.setupWithViewPager(binding.viewpager)
         viewpagerAdapter = HomeViewPagerAdapter(childFragmentManager)
@@ -71,13 +62,6 @@ class HomeFragment : Fragment() {
         }
 
         subscribeUi()
-
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object :
-            OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-
-            }
-        })
     }
 
     override fun onStart() {
@@ -125,13 +109,5 @@ class HomeFragment : Fragment() {
                     .into(binding.controllerThumnail)
             }
         })
-    }
-
-    fun showBottomMenu() {
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-    }
-
-    fun hideBottomMenu() {
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 }

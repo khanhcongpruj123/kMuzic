@@ -27,7 +27,6 @@ abstract class BaseMusicFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-//        musicVM.onStart()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

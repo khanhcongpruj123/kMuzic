@@ -2,7 +2,6 @@ package com.icongkhanh.kmuzic.fragments.home.homeviewpager.allmusic
 
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +23,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
  */
 class AllMusicFragment : BaseMusicFragment() {
 
+
     private var _binding: FragmentAllMusicBinding? = null
     private val binding get() = _binding!!
 
@@ -40,6 +40,8 @@ class AllMusicFragment : BaseMusicFragment() {
 
         if (checkReadPermission(context!!))
         else requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+
+
     }
 
     override fun onCreateView(
@@ -106,7 +108,7 @@ class AllMusicFragment : BaseMusicFragment() {
 
                 }
                 is AllMusicContract.AllMusicViewEvent.LongClickItemMusic -> {
-                    Log.d(TAG, "Long Clicked!")
+
                 }
             }
         })
