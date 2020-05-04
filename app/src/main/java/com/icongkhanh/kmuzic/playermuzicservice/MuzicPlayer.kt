@@ -4,6 +4,8 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Handler
+import android.os.HandlerThread
 import android.os.IBinder
 import android.util.Log
 import com.icongkhanh.kmuzic.domain.Result
@@ -18,6 +20,14 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class MuzicPlayer(val context: Context, val getNowPlaylist: GetNowPlaylistUsecase) {
+
+    val handlerThread = HandlerThread("player")
+    val handler : Handler
+
+    init {
+        handlerThread.start()
+        handler = Handler(handlerThread.looper)
+    }
 
     /**
      * state of bind
@@ -115,37 +125,48 @@ class MuzicPlayer(val context: Context, val getNowPlaylist: GetNowPlaylistUsecas
 
     fun play(muzic: Muzic) {
 
-        if (!isValidate()) {
-            bind()
-        }
-        if (getCurrentMuzic()?.id == muzic.id) return
-        muzicService?.addMusicToPlaylistAndPlay(muzic)
+        handler.postDelayed({
+            if (!isValidate()) {
+                bind()
+            }
+            if (getCurrentMuzic()?.id != muzic.id) {
+                muzicService?.addMusicToPlaylistAndPlay(muzic)
+            }
+        }, 100)
     }
 
     fun playOrPause() {
-        if (!isValidate()) {
-            bind()
-        }
-        muzicService?.playOrPause()
+        handler.postDelayed({
+            if (!isValidate()) {
+                bind()
+            }
+            muzicService?.playOrPause()
+        }, 100)
     }
 
     fun pause() {
-        if (!isValidate()) return
-        muzicService?.pause()
+        handler.postDelayed({
+            if (!isValidate()) bind()
+            muzicService?.pause()
+        }, 100)
     }
 
     fun next() {
-        if (!isValidate()) {
-            bind()
-        }
-        muzicService?.next()
+        handler.postDelayed({
+            if (!isValidate()) {
+                bind()
+            }
+            muzicService?.next()
+        }, 100)
     }
 
     fun previous() {
-        if (!isValidate()) {
-            bind()
-        }
-        muzicService?.previous()
+        handler.postDelayed({
+            if (!isValidate()) {
+                bind()
+            }
+            muzicService?.previous()
+        }, 100)
     }
 
     fun isValidate(): Boolean {

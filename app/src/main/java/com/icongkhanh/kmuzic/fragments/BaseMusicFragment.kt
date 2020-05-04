@@ -60,7 +60,9 @@ abstract class BaseMusicFragment : Fragment() {
 
         getListMusic().observe(viewLifecycleOwner, Observer {
             it?.let {
-                adapter.updateListMusic(it.list)
+                listMusic.postDelayed({
+                    adapter.submitList(it.list)
+                }, 100)
                 onListMusicChanged()
             }
         })
@@ -111,7 +113,9 @@ abstract class BaseMusicFragment : Fragment() {
     }
 
     protected open fun updateListMusic(list: List<Music>) {
-        adapter.updateListMusic(list)
+        listMusic.postDelayed({
+            adapter.submitList(list)
+        }, 100)
     }
 
     protected fun getMusicViewModel() = musicVM

@@ -124,24 +124,28 @@ class MuzicService : Service(), OnMuzicStateChangedListener {
     fun play() {
 
         //prevent from multi access to media player
-        synchronized(currentPlayer) {
-            currentPlayer.reset()
-            getCurrentMusic()?.path?.let {
+        synchronized(MuzicPlayer) {
+            try {
+                currentPlayer.reset()
+                getCurrentMusic()?.path?.let {
 
-                currentPlayer.setDataSource(getCurrentMusic()?.path)
-                currentPlayer.prepare()
-                currentPlayer.start()
+                    currentPlayer.setDataSource(getCurrentMusic()?.path)
+                    currentPlayer.prepare()
+                    currentPlayer.start()
 
-                muzicState = MuzicState.PLAY
+                    muzicState = MuzicState.PLAY
 
-                progressTask = GetMusicProgressTask()
+                    progressTask = GetMusicProgressTask()
 
-                timer.schedule(progressTask, 0, 500)
+                    timer.schedule(progressTask, 0, 500)
 
-                handleMuzicPlayingChangedListener(getCurrentMusic())
-                currentPlayer.setOnCompletionListener {
-                    next()
+                    handleMuzicPlayingChangedListener(getCurrentMusic())
+                    currentPlayer.setOnCompletionListener {
+                        next()
+                    }
                 }
+            } catch (ex: Exception) {
+
             }
         }
     }
