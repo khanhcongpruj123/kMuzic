@@ -30,6 +30,14 @@ class FavoriteMusicFragment : BaseMusicFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        subscribeUi()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        vm.loadMusic()
     }
 
     override fun getMusicRecyclerView(): RecyclerView = binding.listMusic

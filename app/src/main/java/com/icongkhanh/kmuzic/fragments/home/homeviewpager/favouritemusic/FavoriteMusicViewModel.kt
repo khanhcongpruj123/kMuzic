@@ -24,9 +24,9 @@ class FavoriteMusicViewModel(
     val listMusic: LiveData<ListMusicUiModel> = _listMusic
 
     init {
-        if (isReadPermissionGranted) {
-            loadMusic()
-        }
+//        if (isReadPermissionGranted) {
+//            loadMusic()
+//        }
     }
 
     fun loadMusic() {

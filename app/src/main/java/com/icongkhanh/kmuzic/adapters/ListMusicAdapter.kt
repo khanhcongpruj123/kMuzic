@@ -98,14 +98,14 @@ class ListMusicAdapter(val context: Context) : ListAdapter<Music, ListMusicAdapt
     }
 
     fun updatePlayingMusic(music: Music?) {
-//        if (music == null) return
-//        oldIndex = indexPlaying
-//        indexPlaying = get.indexOfFirst {
-//            val isTrue = it.id == music.id
-//            isTrue
-//        }
-//        notifyItemChanged(oldIndex)
-//        notifyItemChanged(indexPlaying)
+        if (music == null) return
+        oldIndex = indexPlaying
+        indexPlaying = currentList.indexOfFirst {
+            val isTrue = it.id == music.id
+            isTrue
+        }
+        notifyItemChanged(oldIndex)
+        notifyItemChanged(indexPlaying)
     }
 
     fun updateProgress(progress: Float? = 0f) {
